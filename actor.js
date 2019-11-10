@@ -36,34 +36,38 @@ export class Actor {
   }
 }
 
+// Actor.prototype.update = function(time, state) {
+//   const [, next, ...rest] = state.level.getPathFrom(
+//     Math.floor(this.pos.x),
+//     Math.floor(this.pos.y)
+//   );
+//   const [nextX, nextY] = next;
+//
+//   console.log('Moving from', this.pos.x, 'X to', nextX);
+//   console.log('Moving from', this.pos.y, 'Y to', nextY);
+//
+//   let xSpeed = 0;
+//   let ySpeed = 0;
+//   if (nextX > Math.floor(this.pos.x)) {
+//     xSpeed += this.speed.x;
+//   } else if (nextX < Math.floor(this.pos.x)) {
+//     xSpeed -= this.speed.x;
+//   } else if (nextY > Math.floor(this.pos.y)) {
+//     ySpeed += this.speed.y;
+//   } else {
+//     ySpeed -= this.speed.y;
+//   }
+//
+//   let newPos;
+//   if (xSpeed) {
+//     newPos = this.pos.plus(new Vector(xSpeed * time, 0));
+//   } else {
+//     newPos = this.pos.plus(new Vector(0, ySpeed * time));
+//   }
+//
+//   return new Actor(this.type, this.health, newPos, this.size, this.speed);
+// };
+
 Actor.prototype.update = function(time, state) {
-  const [, next, ...rest] = state.level.findPath(
-    Math.floor(this.pos.x),
-    Math.floor(this.pos.y)
-  );
-  const [nextX, nextY] = next;
-
-  console.log('Moving from', this.pos.x, 'X to', nextX);
-  console.log('Moving from', this.pos.y, 'Y to', nextY);
-
-  let xSpeed = 0;
-  let ySpeed = 0;
-  if (nextX > Math.floor(this.pos.x)) {
-    xSpeed += this.speed.x;
-  } else if (nextX < Math.floor(this.pos.x)) {
-    xSpeed -= this.speed.x;
-  } else if (nextY > Math.floor(this.pos.y)) {
-    ySpeed += this.speed.y;
-  } else {
-    ySpeed -= this.speed.y;
-  }
-
-  let newPos;
-  if (xSpeed) {
-    newPos = this.pos.plus(new Vector(xSpeed * time, 0));
-  } else {
-    newPos = this.pos.plus(new Vector(0, ySpeed * time));
-  }
-
-  return new Actor(this.type, this.health, newPos, this.size, this.speed);
+  return this;
 };
