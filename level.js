@@ -58,6 +58,8 @@ Level.prototype.getPathFrom = function(start, end) {
       }
     }
   }
+
+  return path;
 };
 
 const charTypes = {

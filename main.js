@@ -80,7 +80,9 @@ async function runGame(game) {
   for (let wave = 0; wave < game.waves.length; ) {
     //TODO: Refactor
     const actors = game.waves[wave].actors
-      .map(actor => Actor.createFor(actor.type, actor.count, level.start))
+      .map(actor => {
+        return Actor.createFor(actor.count, actor.type, level.path.start);
+      })
       .flat();
 
     const state = State.start(level, actors);

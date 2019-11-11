@@ -2,6 +2,10 @@ export class Path {
   constructor(start) {
     this._startNode = start ? new PathNode(start) : null;
   }
+
+  get start() {
+    return this._startNode;
+  }
 }
 
 Path.prototype.add = function(pos) {
