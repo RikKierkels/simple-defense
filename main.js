@@ -27,16 +27,8 @@ const game = {
 ................########.....#
 .............................#
 .............................E
-..............................
-..............................
-..............................
-..............................
-..............................
-..............................
-..............................
-..............................
 `,
-  waves: [{ actors: [{ type: 'goblin', count: 1 }] }]
+  waves: [{ actors: [{ type: 'goblin', count: 30 }] }]
 };
 
 function runAnimation(frameFunc) {
@@ -59,14 +51,14 @@ function runWave(display, state) {
     runAnimation(time => {
       state = state.update(time);
       display.syncState(state);
-      if (state.status === 'playing') {
+      if (state.lives > 0) {
         return true;
       } else if (ending > 0) {
         ending -= time;
         return true;
       } else {
         display.clear();
-        resolve(state.status);
+        resolve(state.lives);
         return false;
       }
     });
@@ -86,8 +78,8 @@ async function runGame(game) {
       .flat();
 
     const state = State.start(level, actors);
-    const status = await runWave(display, state);
-    if (status === 'won') wave++;
+    const lives = await runWave(display, state);
+    if (lives > 0) wave++;
   }
 }
 

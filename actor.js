@@ -1,11 +1,16 @@
 import { Vector } from './vector.js';
 
 const actors = {
-  goblin: { health: 200, size: { x: 1, y: 1 }, speed: { x: 2, y: 2 } }
+  goblin: {
+    health: 200,
+    size: { x: 1, y: 1 },
+    speed: { x: 50, y: 50 },
+    spawnRate: 20
+  }
 };
 
 export class Actor {
-  constructor(type, pos, goal) {
+  constructor(type, pos, goal, status = 'queued') {
     const health = actors[type].health;
     const speed = actors[type].speed;
     const size = actors[type].size;
@@ -16,6 +21,7 @@ export class Actor {
     this.size = size;
     this.speed = speed;
     this.goal = goal;
+    this.status = status;
   }
 
   static create(type, pos, goal) {
@@ -32,6 +38,14 @@ export class Actor {
 }
 
 Actor.prototype.update = function(time, state) {
+  if (this.status !== 'alive') {
+    return this;
+  }
+
+  if (!this.goal.next) {
+    return new Actor(this.type, this.pos, this.goal, 'survived');
+  }
+
   const { x: xCurrent, y: yCurrent } = this.pos;
   const { x: xNext, y: yNext } = this.goal.pos;
 
@@ -58,17 +72,17 @@ Actor.prototype.moveHorizontally = function(direction, xNext, time) {
   const distanceTravelled = new Vector(speed * time, 0);
   let newPos = this.pos.plus(distanceTravelled);
 
+  let nextGoal = this.goal;
   const hasReachedGoal =
     (direction === 'right' && newPos.x > xNext) ||
     (direction === 'left' && newPos.x < xNext);
 
-  let nextGoal = this.goal;
   if (hasReachedGoal) {
     newPos = new Vector(xNext, newPos.y);
     nextGoal = this.goal.next;
   }
 
-  return new Actor(this.type, newPos, nextGoal);
+  return new Actor(this.type, newPos, nextGoal, this.status);
 };
 
 Actor.prototype.moveVertically = function(direction, yNext, time) {
@@ -82,15 +96,15 @@ Actor.prototype.moveVertically = function(direction, yNext, time) {
   const distanceTravelled = new Vector(0, speed * time);
   let newPos = this.pos.plus(distanceTravelled);
 
+  let nextGoal = this.goal;
   const hasReachedGoal =
     (direction === 'down' && newPos.y > yNext) ||
     (direction === 'up' && newPos.y < yNext);
 
-  let nextGoal = this.goal;
   if (hasReachedGoal) {
     newPos = new Vector(newPos.x, yNext);
     nextGoal = this.goal.next;
   }
 
-  return new Actor(this.type, newPos, nextGoal);
+  return new Actor(this.type, newPos, nextGoal, this.status);
 };

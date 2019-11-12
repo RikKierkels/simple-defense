@@ -58,10 +58,12 @@ CanvasDisplay.prototype.drawBackground = function(level) {
 
 CanvasDisplay.prototype.drawActors = function(actors) {
   for (const actor of actors) {
+    if (actor.status !== 'alive') {
+      return;
+    }
+
     const width = actor.size.x * scale;
     const height = actor.size.y * scale;
-    const x = actor.pos.x * scale;
-    const y = actor.pos.y * scale;
     const sprite = spriteOffsets[actor.type];
 
     this.context.drawImage(
@@ -70,8 +72,8 @@ CanvasDisplay.prototype.drawActors = function(actors) {
       sprite.y,
       sprite.w,
       sprite.h,
-      x,
-      y,
+      actor.pos.x * scale,
+      actor.pos.y * scale,
       width,
       height
     );
