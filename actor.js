@@ -5,7 +5,11 @@ const actors = {
 };
 
 export class Actor {
-  constructor(type, health, pos, size, speed, goal) {
+  constructor(type, pos, goal) {
+    const health = actors[type].health;
+    const speed = actors[type].speed;
+    const size = actors[type].size;
+
     this.type = type;
     this.health = health;
     this.pos = pos;
@@ -15,18 +19,7 @@ export class Actor {
   }
 
   static create(type, pos, goal) {
-    const health = actors[type].health;
-    const speed = actors[type].speed;
-    const size = actors[type].size;
-
-    return new Actor(
-      type,
-      health,
-      pos,
-      new Vector(size.x, size.y),
-      new Vector(speed.x, speed.y),
-      goal
-    );
+    return new Actor(type, pos, goal);
   }
 
   static createFor(count, type, startNode) {
@@ -42,44 +35,62 @@ Actor.prototype.update = function(time, state) {
   const { x: xCurrent, y: yCurrent } = this.pos;
   const { x: xNext, y: yNext } = this.goal.pos;
 
-  let isMovingHorizontally, isReversed;
+  let direction;
   if (xNext < xCurrent || xNext > xCurrent) {
-    isMovingHorizontally = true;
-    isReversed = xNext < xCurrent;
+    direction = xNext < xCurrent ? 'left' : 'right';
   } else {
-    isMovingHorizontally = false;
-    isReversed = yNext < yCurrent;
+    direction = yNext < yCurrent ? 'up' : 'down';
   }
 
+  return direction === 'left' || direction === 'right'
+    ? this.moveHorizontally(direction, xNext, time)
+    : this.moveVertically(direction, yNext, time);
+};
+
+Actor.prototype.moveHorizontally = function(direction, xNext, time) {
   let speed = 0;
-  if (isMovingHorizontally && isReversed) {
-    speed -= this.speed.x;
-  } else if (isMovingHorizontally && !isReversed) {
+  if (direction === 'right') {
     speed += this.speed.x;
-  } else if (!isMovingHorizontally && isReversed) {
-    speed -= this.speed.y;
   } else {
-    speed += this.speed.y;
+    speed -= this.speed.x;
   }
 
-  let newPos;
-  if (isMovingHorizontally) {
-    newPos = this.pos.plus(new Vector(speed * time, 0));
-  } else {
-    newPos = this.pos.plus(new Vector(0, speed * time));
-  }
+  const distanceTravelled = new Vector(speed * time, 0);
+  let newPos = this.pos.plus(distanceTravelled);
 
-  let goal = this.goal;
-  if ((newPos.x < xNext && isReversed) || (newPos.x > xNext && !isReversed)) {
+  const hasReachedGoal =
+    (direction === 'right' && newPos.x > xNext) ||
+    (direction === 'left' && newPos.x < xNext);
+
+  let nextGoal = this.goal;
+  if (hasReachedGoal) {
     newPos = new Vector(xNext, newPos.y);
-    goal = this.goal.next;
-  } else if (
-    (newPos.y < yNext && isReversed) ||
-    (newPos.y > yNext && !isReversed)
-  ) {
-    newPos = new Vector(newPos.x, yNext);
-    goal = this.goal.next;
+    nextGoal = this.goal.next;
   }
 
-  return new Actor(this.type, this.health, newPos, this.size, this.speed, goal);
+  return new Actor(this.type, newPos, nextGoal);
+};
+
+Actor.prototype.moveVertically = function(direction, yNext, time) {
+  let speed = 0;
+  if (direction === 'down') {
+    speed += this.speed.y;
+  } else {
+    speed -= this.speed.y;
+  }
+
+  const distanceTravelled = new Vector(0, speed * time);
+  let newPos = this.pos.plus(distanceTravelled);
+
+  const hasReachedGoal =
+    (direction === 'down' && newPos.y > yNext) ||
+    (direction === 'up' && newPos.y < yNext);
+
+  let nextGoal = this.goal;
+  if (hasReachedGoal) {
+    newPos = new Vector(newPos.x, yNext);
+    nextGoal = this.goal.next;
+  }
+
+  return new Actor(this.type, newPos, nextGoal);
 };
