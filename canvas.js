@@ -28,6 +28,7 @@ export class CanvasDisplay {
 CanvasDisplay.prototype.syncState = function(state) {
   this.drawBackground(state.level);
   this.drawActors(state.actors);
+  this.drawStatistics(state.lives);
 };
 
 CanvasDisplay.prototype.drawBackground = function(level) {
@@ -58,10 +59,6 @@ CanvasDisplay.prototype.drawBackground = function(level) {
 
 CanvasDisplay.prototype.drawActors = function(actors) {
   for (const actor of actors) {
-    if (actor.status !== 'alive') {
-      return;
-    }
-
     const width = actor.size.x * scale;
     const height = actor.size.y * scale;
     const sprite = spriteOffsets[actor.type];
@@ -78,4 +75,10 @@ CanvasDisplay.prototype.drawActors = function(actors) {
       height
     );
   }
+};
+
+CanvasDisplay.prototype.drawStatistics = function(lives) {
+  this.context.font = '28px Georgia';
+  this.context.fillStyle = 'white';
+  this.context.fillText(lives, 20, this.canvas.height - 20);
 };

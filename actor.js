@@ -1,19 +1,19 @@
 import { Vector } from './vector.js';
 
-const actors = {
+export const actorTypes = {
   goblin: {
     health: 200,
     size: { x: 1, y: 1 },
-    speed: { x: 50, y: 50 },
+    speed: { x: 100, y: 100 },
     spawnRate: 20
   }
 };
 
 export class Actor {
-  constructor(type, pos, goal, status = 'queued') {
-    const health = actors[type].health;
-    const speed = actors[type].speed;
-    const size = actors[type].size;
+  constructor(type, pos, goal, status = 'alive') {
+    const health = actorTypes[type].health;
+    const speed = actorTypes[type].speed;
+    const size = actorTypes[type].size;
 
     this.type = type;
     this.health = health;
@@ -27,21 +27,9 @@ export class Actor {
   static create(type, pos, goal) {
     return new Actor(type, pos, goal);
   }
-
-  static createFor(count, type, startNode) {
-    const actors = [];
-    for (let i = 0; i < count; i++) {
-      actors.push(Actor.create(type, startNode.pos, startNode.next));
-    }
-    return actors;
-  }
 }
 
 Actor.prototype.update = function(time, state) {
-  if (this.status !== 'alive') {
-    return this;
-  }
-
   if (!this.goal.next) {
     return new Actor(this.type, this.pos, this.goal, 'survived');
   }

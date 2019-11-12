@@ -1,7 +1,6 @@
 import { State } from './state.js';
 import { Level } from './level.js';
 import { CanvasDisplay } from './canvas.js';
-import { Actor } from './actor.js';
 
 const game = {
   plan: `
@@ -28,7 +27,7 @@ const game = {
 .............................#
 .............................E
 `,
-  waves: [{ actors: [{ type: 'goblin', count: 30 }] }]
+  waves: [{ spawns: [{ type: 'goblin', count: 2 }] }]
 };
 
 function runAnimation(frameFunc) {
@@ -70,14 +69,7 @@ async function runGame(game) {
   const display = new CanvasDisplay(document.body, level);
 
   for (let wave = 0; wave < game.waves.length; ) {
-    //TODO: Refactor
-    const actors = game.waves[wave].actors
-      .map(actor => {
-        return Actor.createFor(actor.count, actor.type, level.path.start);
-      })
-      .flat();
-
-    const state = State.start(level, actors);
+    const state = State.start(level, game.waves[wave].spawns);
     const lives = await runWave(display, state);
     if (lives > 0) wave++;
   }
