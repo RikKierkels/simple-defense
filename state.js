@@ -1,23 +1,20 @@
 import { Actor, actorTypes } from './actor.js';
 
 export class State {
-  constructor(level, spawns, actors, lives, ticks) {
+  constructor(level, spawns, actors, lives) {
     this.level = level;
     this.spawns = spawns;
     this.actors = actors;
     this.lives = lives;
-    this.ticks = ticks;
   }
 
   static start(level, spawns) {
-    return new State(level, spawns, [], 20, 0);
+    return new State(level, spawns, [], 20);
   }
 }
 
 State.prototype.update = function(time) {
-  let ticks = this.ticks + 1;
-
-  const { actors: spawnedActors, spawns } = this.spawnActors(ticks);
+  const waves = this.waves.map(wave => wave.update(time, level));
 
   let actors = this.actors.concat(spawnedActors);
   actors = actors.map(actor => actor.update(time, this));
@@ -30,23 +27,14 @@ State.prototype.update = function(time) {
   return new State(this.level, spawns, actors, lives, ticks);
 };
 
-State.prototype.spawnActors = function(ticks) {
+State.prototype.spawnActors = function(time, level) {
   const actors = [];
+  for (let wave of waves) {
+    if (!wave.spawnQueue || !wave.spawnQueue.length) continue;
 
-  for (let spawn of this.spawns) {
-    const spawnRate = actorTypes[spawn.type].spawnRate;
-
-    if (spawn.count === 0 || ticks % spawnRate !== 0) continue;
-
-    const startNode = this.level.path.start;
-    const actor = Actor.create(spawn.type, startNode.pos, startNode.next);
-    actors.push(actor);
+    actors.concat(wave.spawnQueue);
+    //TODO: Refactor spawnqueu
+    wave = wave.resetSpawnQueue();
   }
-
-  const spawns = this.spawns.map(spawn => {
-    const hasSpawnedActor = actors.some(actor => actor.type === spawn.type);
-    return hasSpawnedActor ? { ...spawn, count: spawn.count - 1 } : spawn;
-  });
-
-  return { actors, spawns };
+  return actors;
 };
