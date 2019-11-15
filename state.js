@@ -14,10 +14,11 @@ export class State {
 }
 
 State.prototype.update = function(time) {
-  const spawns = this.spawns.map(wave => wave.update(time, this.level));
-  const spawnedActors = this.spawnActors(spawns);
+  let spawns = this.spawns.map(spawn => spawn.update(time, this.level));
+  const newActors = spawns.map(({ queue }) => queue).flat();
+  spawns = spawns.map(spawn => spawn.resetQueue());
 
-  let actors = this.actors.concat(spawnedActors);
+  let actors = this.actors.concat(newActors);
   actors = actors.map(actor => actor.update(time, this));
 
   const survived = actors.filter(({ status }) => status === 'survived');
@@ -26,18 +27,4 @@ State.prototype.update = function(time) {
   actors = actors.filter(({ status }) => status !== 'survived');
 
   return new State(this.level, spawns, actors, lives);
-};
-
-State.prototype.spawnActors = function(spawns) {
-  const actors = [];
-
-  for (let i = 0; i < spawns.length; i++) {
-    let spawn = spawns[i];
-    if (!spawn.queue || !spawn.queue.length) continue;
-
-    actors.concat(spawn.queue);
-    spawn = spawn.resetQueue();
-  }
-
-  return actors;
 };

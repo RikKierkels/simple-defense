@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8dbcae34-4f40-4148-8804-21dda3da34d0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/spawn.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/actor.js" beforeDir="false" afterPath="$PROJECT_DIR$/actor.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spawn.js" beforeDir="false" afterPath="$PROJECT_DIR$/spawn.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/state.js" beforeDir="false" afterPath="$PROJECT_DIR$/state.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wave.js" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -124,7 +123,8 @@
       <workItem from="1573580627508" duration="2981000" />
       <workItem from="1573584452497" duration="1754000" />
       <workItem from="1573800774595" duration="258000" />
-      <workItem from="1573801047187" duration="573000" />
+      <workItem from="1573801047187" duration="642000" />
+      <workItem from="1573804046607" duration="771000" />
     </task>
     <servers />
   </component>
@@ -136,7 +136,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>

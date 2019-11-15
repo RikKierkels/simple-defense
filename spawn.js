@@ -37,5 +37,7 @@ Spawn.prototype.update = function(time, level) {
 };
 
 Spawn.prototype.resetQueue = function() {
+  if (!this.queue || !this.queue.length) return this;
+
   return new Spawn(this.type, this.remainingCount, this.timer);
 };
