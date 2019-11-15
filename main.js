@@ -1,6 +1,7 @@
 import { State } from './state.js';
 import { Level } from './level.js';
 import { CanvasDisplay } from './canvas.js';
+import { Spawn } from './spawn.js';
 
 const game = {
   plan: `
@@ -27,7 +28,7 @@ const game = {
 .............................#
 .............................E
 `,
-  waves: [{ spawns: [{ type: 'goblin', count: 2 }] }]
+  waves: [{ spawns: [Spawn.create('goblin', 20, 2)] }]
 };
 
 function runAnimation(frameFunc) {
