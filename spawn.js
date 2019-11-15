@@ -1,4 +1,5 @@
 import { Actor } from './actor.js';
+import { Timer } from './timer.js';
 
 export class Spawn {
   constructor(type, remainingCount, timer, queue = []) {
@@ -18,17 +19,17 @@ Spawn.prototype.update = function(time, level) {
 
   let timer = this.timer.update(time);
 
-  const isSpawnOnCooldown = !timer.hasExpired;
-  if (isSpawnOnCooldown) {
+  const isOnCooldown = !timer.hasExpired;
+  if (isOnCooldown) {
     return new Spawn(this.type, this.remainingCount, timer, this.queue);
   }
 
   const actor = Actor.create(
     this.type,
     level.path.start.pos,
-    level.path.start.pos.next
+    level.path.start.next
   );
-  spawnTimer = timer.reset();
+  timer = timer.reset();
 
   return new Spawn(this.type, this.remainingCount - 1, timer, [
     ...this.queue,

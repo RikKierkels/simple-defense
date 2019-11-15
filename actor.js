@@ -1,16 +1,21 @@
 import { Vector } from './vector.js';
+import { ACTOR_STATUS, DIRECTION } from './const.js';
 
 export const actorTypes = {
   goblin: {
     health: 200,
     size: { x: 1, y: 1 },
-    speed: { x: 100, y: 100 },
-    spawnRate: 20
+    speed: { x: 20, y: 20 }
+  },
+  orc: {
+    health: 300,
+    size: { x: 1, y: 1 },
+    speed: { x: 20, y: 20 }
   }
 };
 
 export class Actor {
-  constructor(type, pos, goal, status = 'alive') {
+  constructor(type, pos, goal, status = ACTOR_STATUS.ALIVE) {
     const health = actorTypes[type].health;
     const speed = actorTypes[type].speed;
     const size = actorTypes[type].size;
@@ -29,9 +34,9 @@ export class Actor {
   }
 }
 
-Actor.prototype.update = function(time, state) {
+Actor.prototype.update = function(time) {
   if (!this.goal.next) {
-    return new Actor(this.type, this.pos, this.goal, 'survived');
+    return new Actor(this.type, this.pos, this.goal, ACTOR_STATUS.SURVIVED);
   }
 
   const { x: xCurrent, y: yCurrent } = this.pos;
@@ -39,26 +44,27 @@ Actor.prototype.update = function(time, state) {
 
   let direction;
   if (xNext < xCurrent || xNext > xCurrent) {
-    direction = xNext < xCurrent ? 'left' : 'right';
+    direction = xNext < xCurrent ? DIRECTION.LEFT : DIRECTION.RIGHT;
   } else {
-    direction = yNext < yCurrent ? 'up' : 'down';
+    direction = yNext < yCurrent ? DIRECTION.UP : DIRECTION.DOWN;
   }
 
-  return direction === 'left' || direction === 'right'
+  return direction === DIRECTION.LEFT || direction === DIRECTION.RIGHT
     ? this.moveHorizontally(direction, xNext, time)
     : this.moveVertically(direction, yNext, time);
 };
 
 Actor.prototype.moveHorizontally = function(direction, xNext, time) {
-  const speed = direction === 'right' ? this.speed.x : this.speed.x * -1;
+  const speed =
+    direction === DIRECTION.RIGHT ? this.speed.x : this.speed.x * -1;
 
   const distanceTravelled = new Vector(speed, 0).times(time);
   let newPos = this.pos.plus(distanceTravelled);
 
   let nextGoal = this.goal;
   const hasReachedGoal =
-    (direction === 'right' && newPos.x > xNext) ||
-    (direction === 'left' && newPos.x < xNext);
+    (direction === DIRECTION.RIGHT && newPos.x > xNext) ||
+    (direction === DIRECTION.LEFT && newPos.x < xNext);
 
   if (hasReachedGoal) {
     newPos = new Vector(xNext, newPos.y);
@@ -69,15 +75,15 @@ Actor.prototype.moveHorizontally = function(direction, xNext, time) {
 };
 
 Actor.prototype.moveVertically = function(direction, yNext, time) {
-  const speed = direction === 'down' ? this.speed.y : this.speed.y * -1;
+  const speed = direction === DIRECTION.DOWN ? this.speed.y : this.speed.y * -1;
 
   const distanceTravelled = new Vector(0, speed).times(time);
   let newPos = this.pos.plus(distanceTravelled);
 
   let nextGoal = this.goal;
   const hasReachedGoal =
-    (direction === 'down' && newPos.y > yNext) ||
-    (direction === 'up' && newPos.y < yNext);
+    (direction === DIRECTION.DOWN && newPos.y > yNext) ||
+    (direction === DIRECTION.UP && newPos.y < yNext);
 
   if (hasReachedGoal) {
     newPos = new Vector(newPos.x, yNext);

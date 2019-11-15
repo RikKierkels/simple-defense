@@ -8,7 +8,8 @@ const spriteOffsets = {
   end: { x: 0, y: 0, h: 128, w: 128 },
   path: { x: 0, y: 768, h: 128, w: 128 },
   obstacle: { x: 128, y: 512, h: 128, w: 128 },
-  goblin: { x: 128, y: 128, h: 128, w: 128 }
+  goblin: { x: 128, y: 128, h: 128, w: 128 },
+  orc: { x: 256, y: 256, h: 128, w: 128 }
 };
 
 export class CanvasDisplay {

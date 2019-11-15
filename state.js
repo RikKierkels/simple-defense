@@ -1,4 +1,4 @@
-import { Actor, actorTypes } from './actor.js';
+import { ACTOR_STATUS } from './const.js';
 
 export class State {
   constructor(level, spawns, actors, lives) {
@@ -15,16 +15,19 @@ export class State {
 
 State.prototype.update = function(time) {
   let spawns = this.spawns.map(spawn => spawn.update(time, this.level));
-  const newActors = spawns.map(({ queue }) => queue).flat();
+  let actors = spawns
+    .map(({ queue }) => queue)
+    .flat()
+    .concat(this.actors);
   spawns = spawns.map(spawn => spawn.resetQueue());
 
-  let actors = this.actors.concat(newActors);
   actors = actors.map(actor => actor.update(time, this));
 
-  const survived = actors.filter(({ status }) => status === 'survived');
+  const survived = actors.filter(
+    ({ status }) => status === ACTOR_STATUS.SURVIVED
+  );
   const lives = this.lives - survived.length;
-
-  actors = actors.filter(({ status }) => status !== 'survived');
+  actors = actors.filter(({ status }) => status !== ACTOR_STATUS.SURVIVED);
 
   return new State(this.level, spawns, actors, lives);
 };

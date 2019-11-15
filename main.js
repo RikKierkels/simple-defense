@@ -28,7 +28,9 @@ const game = {
 .............................#
 .............................E
 `,
-  waves: [{ spawns: [Spawn.create('goblin', 20, 2)] }]
+  waves: [
+    { spawns: [Spawn.create('goblin', 20, 0.1), Spawn.create('orc', 30, 0.2)] }
+  ]
 };
 
 function runAnimation(frameFunc) {
