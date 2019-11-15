@@ -36,7 +36,7 @@ export class Actor {
 
 Actor.prototype.update = function(time) {
   if (!this.goal.next) {
-    return new Actor(this.type, this.pos, this.goal, ACTOR_STATUS.SURVIVED);
+    return this.survived();
   }
 
   const { x: xCurrent, y: yCurrent } = this.pos;
@@ -61,17 +61,16 @@ Actor.prototype.moveHorizontally = function(direction, xNext, time) {
   const distanceTravelled = new Vector(speed, 0).times(time);
   let newPos = this.pos.plus(distanceTravelled);
 
-  let nextGoal = this.goal;
   const hasReachedGoal =
     (direction === DIRECTION.RIGHT && newPos.x > xNext) ||
     (direction === DIRECTION.LEFT && newPos.x < xNext);
 
   if (hasReachedGoal) {
     newPos = new Vector(xNext, newPos.y);
-    nextGoal = this.goal.next;
+    return new Actor(this.type, newPos, this.goal.next, this.status);
   }
 
-  return new Actor(this.type, newPos, nextGoal, this.status);
+  return new Actor(this.type, newPos, this.goal, this.status);
 };
 
 Actor.prototype.moveVertically = function(direction, yNext, time) {
@@ -80,15 +79,22 @@ Actor.prototype.moveVertically = function(direction, yNext, time) {
   const distanceTravelled = new Vector(0, speed).times(time);
   let newPos = this.pos.plus(distanceTravelled);
 
-  let nextGoal = this.goal;
   const hasReachedGoal =
     (direction === DIRECTION.DOWN && newPos.y > yNext) ||
     (direction === DIRECTION.UP && newPos.y < yNext);
 
   if (hasReachedGoal) {
     newPos = new Vector(newPos.x, yNext);
-    nextGoal = this.goal.next;
+    return new Actor(this.type, newPos, this.goal.next, this.status);
   }
 
-  return new Actor(this.type, newPos, nextGoal, this.status);
+  return new Actor(this.type, newPos, this.goal, this.status);
+};
+
+Actor.prototype.survived = function() {
+  return new Actor(this.type, this.pos, this.goal, ACTOR_STATUS.SURVIVED);
+};
+
+Actor.prototype.died = function() {
+  return new Actor(this.type, this.pos, this.goal, ACTOR_STATUS.DEAD);
 };

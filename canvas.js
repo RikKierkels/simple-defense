@@ -3,19 +3,20 @@ const sprites = document.createElement('img');
 sprites.src = './sprites.png';
 
 const spriteOffsets = {
-  empty: { x: 256, y: 896, h: 128, w: 128 },
-  start: { x: 0, y: 0, h: 128, w: 128 },
-  end: { x: 0, y: 0, h: 128, w: 128 },
-  path: { x: 0, y: 768, h: 128, w: 128 },
+  empty: { x: 2432, y: 768, h: 128, w: 128 },
+  start: { x: 2816, y: 768, h: 128, w: 128 },
+  end: { x: 2816, y: 768, h: 128, w: 128 },
+  path: { x: 2816, y: 768, h: 128, w: 128 },
   obstacle: { x: 128, y: 512, h: 128, w: 128 },
-  goblin: { x: 128, y: 128, h: 128, w: 128 },
-  orc: { x: 256, y: 256, h: 128, w: 128 }
+  goblin: { x: 1920, y: 1280, h: 128, w: 128 },
+  orc: { x: 1920, y: 1408, h: 128, w: 128 }
 };
 
 export class CanvasDisplay {
   constructor(parent, level) {
+    this.menuWidth = 150;
     this.canvas = document.createElement('canvas');
-    this.canvas.width = level.width * scale;
+    this.canvas.width = level.width * scale + this.menuWidth;
     this.canvas.height = level.height * scale;
     parent.appendChild(this.canvas);
     this.context = this.canvas.getContext('2d');
@@ -29,12 +30,13 @@ export class CanvasDisplay {
 CanvasDisplay.prototype.syncState = function(state) {
   this.drawBackground(state.level);
   this.drawActors(state.actors);
+  this.drawMenu();
   this.drawStatistics(state.lives);
 };
 
 CanvasDisplay.prototype.drawBackground = function(level) {
   const xStart = 0;
-  const xEnd = this.canvas.width / scale;
+  const xEnd = (this.canvas.width - this.menuWidth) / scale;
   const yStart = 0;
   const yEnd = this.canvas.height / scale;
 
@@ -76,6 +78,16 @@ CanvasDisplay.prototype.drawActors = function(actors) {
       height
     );
   }
+};
+
+CanvasDisplay.prototype.drawMenu = function() {
+  const xStart = this.canvas.width - this.menuWidth;
+  const yStart = 0;
+  const width = this.menuWidth;
+  const height = this.canvas.height;
+
+  this.context.fillStyle = 'black';
+  this.context.fillRect(xStart, yStart, width, height);
 };
 
 CanvasDisplay.prototype.drawStatistics = function(lives) {

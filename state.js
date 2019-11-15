@@ -9,7 +9,7 @@ export class State {
   }
 
   static start(level, spawns) {
-    return new State(level, spawns, [], 20);
+    return new State(level, spawns, [], 100000);
   }
 }
 
