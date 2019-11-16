@@ -13,7 +13,7 @@ export class State {
   }
 }
 
-State.prototype.update = function(time) {
+State.prototype.update = function(time, userInput) {
   let spawns = this.spawns.map(spawn => spawn.update(time, this.level));
   let actors = spawns
     .map(({ queue }) => queue)

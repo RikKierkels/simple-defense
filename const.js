@@ -10,3 +10,12 @@ export const ACTOR_STATUS = {
   DEAD: 'dead',
   SURVIVED: 'survived'
 };
+
+export const MOUSE_BUTTON = {
+  LEFT: 0,
+  RIGHT: 2
+};
+
+export const KEY = {
+  ESCAPE: 'Escape'
+};
