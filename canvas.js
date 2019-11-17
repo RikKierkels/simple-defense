@@ -1,4 +1,7 @@
-const scale = 25;
+import { MOUSE_BUTTON } from './const.js';
+import { Vector } from './vector.js';
+
+const scale = 35;
 const sprites = document.createElement('img');
 sprites.src = './sprites.png';
 
@@ -22,21 +25,26 @@ export class CanvasDisplay {
     this.context = this.canvas.getContext('2d');
   }
 
+  get levelBackgroundWidth() {
+    return this.canvas.width - this.menuWidth;
+  }
+
   clear() {
     this.canvas.remove();
   }
 }
 
-CanvasDisplay.prototype.syncState = function(state) {
+CanvasDisplay.prototype.syncState = function(state, input) {
   this.drawBackground(state.level);
   this.drawActors(state.actors);
   this.drawMenu();
   this.drawStatistics(state.lives);
+  this.drawTowerPreview(state.level, input);
 };
 
 CanvasDisplay.prototype.drawBackground = function(level) {
   const xStart = 0;
-  const xEnd = (this.canvas.width - this.menuWidth) / scale;
+  const xEnd = this.levelBackgroundWidth / scale;
   const yStart = 0;
   const yEnd = this.canvas.height / scale;
 
@@ -81,7 +89,7 @@ CanvasDisplay.prototype.drawActors = function(actors) {
 };
 
 CanvasDisplay.prototype.drawMenu = function() {
-  const xStart = this.canvas.width - this.menuWidth;
+  const xStart = this.levelBackgroundWidth;
   const yStart = 0;
   const width = this.menuWidth;
   const height = this.canvas.height;
@@ -94,4 +102,68 @@ CanvasDisplay.prototype.drawStatistics = function(lives) {
   this.context.font = '28px Georgia';
   this.context.fillStyle = 'white';
   this.context.fillText(lives, 20, this.canvas.height - 20);
+};
+
+CanvasDisplay.prototype.drawTowerPreview = function(level, userInput) {
+  let { mouseX, mouseY, hasMoved } = userInput;
+  const hasMovedOutOfLevelBounds =
+    mouseX > this.levelBackgroundWidth || mouseY > this.canvas.height;
+
+  if (!hasMoved || hasMovedOutOfLevelBounds) {
+    return;
+  }
+
+  const tower = {
+    type: 'machine-gun',
+    size: new Vector(1, 1),
+    range: new Vector(2, 2)
+  };
+
+  const scaledSize = tower.size.times(scale);
+  const mousePointerOffset = 5;
+  mouseX = mouseX - scaledSize.times(0.5).x - mousePointerOffset;
+  mouseY = mouseY - scaledSize.times(0.5).y - mousePointerOffset;
+
+  const nearestTileX = Math.round(mouseX / scale);
+  const nearestTileY = Math.round(mouseY / scale);
+  const tile = level.rows[nearestTileY][nearestTileX];
+
+  if (!tile || tile !== 'empty') return;
+
+  const tilePos = new Vector(nearestTileX, nearestTileY);
+  this.context.drawImage(
+    sprites,
+    256,
+    256,
+    128,
+    128,
+    tilePos.times(scale).x,
+    tilePos.times(scale).y,
+    scaledSize.x,
+    scaledSize.y
+  );
+
+  const tileCenter = tilePos.plus(tower.size.times(0.5)).times(scale);
+  const radius = tower.size
+    .times(0.5)
+    .plus(tower.range)
+    .times(scale)
+    .average();
+
+  this.context.beginPath();
+  this.context.arc(tileCenter.x, tileCenter.y, radius, 0, 2 * Math.PI);
+  this.context.stroke();
+};
+
+CanvasDisplay.prototype.getMouseTarget = function(userInput) {
+  if (!userInput.buttonStates[MOUSE_BUTTON.LEFT] && !userInput.hasMoved) {
+    return userInput;
+  }
+
+  // TODO: Refactor
+  return {
+    ...userInput,
+    buttonStates: { ...userInput.buttonStates },
+    target: 'tower'
+  };
 };

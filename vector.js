@@ -11,4 +11,8 @@ export class Vector {
   times(factor) {
     return new Vector(this.x * factor, this.y * factor);
   }
+
+  average() {
+    return (this.x + this.y) / 2;
+  }
 }

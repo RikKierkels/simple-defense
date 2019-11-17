@@ -16,18 +16,10 @@ const game = {
 .........################.....
 .........#....................
 .........#....................
-.........####################.
-............................#.
-.........@@.....####..@@@...#.
-................#..#........#.
-................#..##########.
-................#.............
-................#.............
-................#......#######
-................#......#.....#
-................########.....#
-.............................#
-.............................E
+.........#....................
+.........#....................
+.........#....................
+.........E....................
 `,
   waves: [
     { spawns: [Spawn.create('goblin', 20, 0.1), Spawn.create('orc', 30, 0.2)] }
@@ -52,8 +44,9 @@ function runWave(display, state) {
 
   return new Promise(resolve => {
     runAnimation(time => {
-      state = state.update(time, userInput);
-      display.syncState(state);
+      const input = display.getMouseTarget(userInput);
+      state = state.update(time, input);
+      display.syncState(state, input);
       if (state.lives > 0) {
         return true;
       } else if (ending > 0) {
@@ -103,9 +96,14 @@ function trackUserInput() {
     event.stopPropagation();
   });
 
+  canvas.addEventListener('mouseup', event => {
+    input.buttonStates[event.button] = false;
+  });
+
   window.addEventListener('keydown', ({ key }) => {
     if (key !== KEY.ESCAPE) return;
     input.buttonStates[key] = true;
+    input.hasMoved = false;
     canvas.removeEventListener('mousemove', moved);
   });
 
