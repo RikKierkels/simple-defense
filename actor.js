@@ -5,12 +5,14 @@ export const actorTypes = {
   goblin: {
     health: 200,
     size: { x: 1, y: 1 },
-    speed: { x: 20, y: 20 }
+    speed: { x: 2, y: 2 },
+    reward: 20
   },
   orc: {
     health: 300,
     size: { x: 1, y: 1 },
-    speed: { x: 20, y: 20 }
+    speed: { x: 2, y: 2 },
+    reward: 30
   }
 };
 
@@ -19,14 +21,16 @@ export class Actor {
     const health = actorTypes[type].health;
     const speed = actorTypes[type].speed;
     const size = actorTypes[type].size;
+    const reward = actorTypes[type].reward;
 
     this.type = type;
     this.health = health;
     this.pos = pos;
-    this.size = size;
-    this.speed = speed;
+    this.size = new Vector(size.x, size.y);
+    this.speed = new Vector(speed.x, speed.y);
     this.goal = goal;
     this.status = status;
+    this.reward = reward;
   }
 
   static create(type, pos, goal) {

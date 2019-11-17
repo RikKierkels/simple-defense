@@ -119,10 +119,10 @@ CanvasDisplay.prototype.drawTowerPreview = function(level, userInput) {
     range: new Vector(2, 2)
   };
 
-  const scaledSize = tower.size.times(scale);
+  const scaledTowerSize = tower.size.times(scale);
   const mousePointerOffset = 5;
-  mouseX = mouseX - scaledSize.times(0.5).x - mousePointerOffset;
-  mouseY = mouseY - scaledSize.times(0.5).y - mousePointerOffset;
+  mouseX = mouseX - scaledTowerSize.x / 2 - mousePointerOffset;
+  mouseY = mouseY - scaledTowerSize.y / 2 - mousePointerOffset;
 
   const nearestTileX = Math.round(mouseX / scale);
   const nearestTileY = Math.round(mouseY / scale);
@@ -137,10 +137,10 @@ CanvasDisplay.prototype.drawTowerPreview = function(level, userInput) {
     256,
     128,
     128,
-    tilePos.times(scale).x,
-    tilePos.times(scale).y,
-    scaledSize.x,
-    scaledSize.y
+    tilePos.x * scale,
+    tilePos.y * scale,
+    scaledTowerSize.x,
+    scaledTowerSize.y
   );
 
   const tileCenter = tilePos.plus(tower.size.times(0.5)).times(scale);
