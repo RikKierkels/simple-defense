@@ -62,6 +62,11 @@ Level.prototype.getPathFrom = function(start, end) {
   return path;
 };
 
+Level.prototype.isTileBlocked = function(x, y) {
+  const tile = this.rows[x][y];
+  return tile && tile !== 'empty';
+};
+
 const charTypes = {
   '.': 'empty',
   '#': 'path',

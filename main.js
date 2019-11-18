@@ -4,7 +4,7 @@ import { CanvasDisplay } from './canvas.js';
 import { Spawn } from './spawn.js';
 import { KEY } from './const.js';
 
-const game = {
+const GAME = {
   plan: `
 .........S....................
 .........#.............@@@....
@@ -44,7 +44,8 @@ function runWave(display, state) {
 
   return new Promise(resolve => {
     runAnimation(time => {
-      const input = display.getMouseTarget(userInput);
+      // TODO: RENAME
+      let input = display.setMouseTarget(userInput);
       state = state.update(time, input);
       display.syncState(state, input);
       if (state.lives > 0) {
@@ -73,13 +74,19 @@ async function runGame(game) {
 }
 
 (async function() {
-  await runGame(game);
+  await runGame(GAME);
 })();
 
 const canvas = document.querySelector('canvas');
 const userInput = trackUserInput();
 function trackUserInput() {
-  const input = { buttonStates: {}, hasMoved: false, mouseX: 0, mouseY: 0 };
+  const input = {
+    buttonStates: {},
+    hasMoved: false,
+    mouseX: 0,
+    mouseY: 0,
+    target: null
+  };
 
   function moved({ clientX, clientY }) {
     input.hasMoved = true;

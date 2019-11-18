@@ -24,13 +24,15 @@ export class State {
 }
 
 State.prototype.update = function(time, userInput) {
+  if (userInput.target) {
+    console.log(userInput.target);
+  }
+
   let spawns = this.spawns.map(spawn => spawn.update(time, this.level));
   let actors = spawns
-    .map(({ queue }) => queue)
+    .map(({ actors }) => actors)
     .flat()
     .concat(this.actors);
-  spawns = spawns.map(spawn => spawn.resetQueue());
-
   actors = actors.map(actor => actor.update(time, this));
 
   const money = actors
@@ -42,6 +44,7 @@ State.prototype.update = function(time, userInput) {
     .reduce((total, _) => total - 1, this.lives);
 
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
+  spawns = spawns.map(spawn => spawn.resetActorQueue());
 
   return new State(this.level, spawns, actors, lives, money);
 };

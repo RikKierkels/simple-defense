@@ -49,7 +49,6 @@ Actor.prototype.update = function(time) {
   let direction;
   if (xNext < xCurrent || xNext > xCurrent) {
     direction = xNext < xCurrent ? DIRECTION.LEFT : DIRECTION.RIGHT;
-    return this.moveHorizontally(direction, xNext, time);
   } else {
     direction = yNext < yCurrent ? DIRECTION.UP : DIRECTION.DOWN;
   }
