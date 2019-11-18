@@ -37,12 +37,10 @@ State.prototype.update = function(time, userInput) {
     .filter(({ status }) => status === ACTOR_STATUS.DEAD)
     .reduce((total, { reward }) => total + reward, this.reward);
 
-  // TODO: Simplify with Reduce?
-  const survivedCount = actors.filter(
-    ({ status }) => status === ACTOR_STATUS.SURVIVED
-  ).length;
+  const lives = actors
+    .filter(({ status }) => status === ACTOR_STATUS.SURVIVED)
+    .reduce((total, _) => total - 1, this.lives);
 
-  const lives = this.lives - survivedCount;
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
 
   return new State(this.level, spawns, actors, lives, money);
