@@ -63,7 +63,7 @@ Level.prototype.getPathFrom = function(start, end) {
 };
 
 Level.prototype.isTileBlocked = function(x, y) {
-  const tile = this.rows[x][y];
+  const tile = this.rows[y][x];
   return tile && tile !== 'empty';
 };
 
