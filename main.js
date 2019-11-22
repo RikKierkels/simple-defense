@@ -85,7 +85,7 @@ function trackUserInput() {
     hasMoved: false,
     mouseX: 0,
     mouseY: 0,
-    target: null
+    mouseTarget: null
   };
 
   function moved({ clientX, clientY }) {

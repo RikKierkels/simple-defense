@@ -1,11 +1,11 @@
 import { MOUSE_BUTTON } from './const.js';
 import { Vector } from './vector.js';
+import { TOWERS } from './tower.js';
 
 const SCALE = 35;
 const PANEL_TOWER_SIZE = SCALE * 2;
 const PANEL_MARGIN = SCALE * 0.75;
 const PANEL_WIDTH = SCALE * 4;
-const PANEL_TOWERS = ['machine-gun', 'rockets'];
 
 const SPRITESHEET = document.createElement('img');
 SPRITESHEET.src = './sprites.png';
@@ -103,21 +103,21 @@ CanvasDisplay.prototype.drawPanel = function() {
   this.context.fillStyle = 'black';
   this.context.fillRect(xStart, yStart, PANEL_WIDTH, this.canvas.height);
 
-  PANEL_TOWERS.map((tower, index) =>
-    this.getTowerPanelPosition(tower, index)
-  ).forEach(({ type, xStart, yStart }) => {
-    this.context.drawImage(
-      SPRITESHEET,
-      SPRITESHEET_OFFSETS[type].x,
-      SPRITESHEET_OFFSETS[type].y,
-      SPRITESHEET_OFFSETS[type].h,
-      SPRITESHEET_OFFSETS[type].w,
-      xStart,
-      yStart,
-      PANEL_TOWER_SIZE,
-      PANEL_TOWER_SIZE
-    );
-  });
+  TOWERS.map(({ type }) => type)
+    .map((type, index) => this.getTowerPanelPosition(type, index))
+    .forEach(({ type, xStart, yStart }) => {
+      this.context.drawImage(
+        SPRITESHEET,
+        SPRITESHEET_OFFSETS[type].x,
+        SPRITESHEET_OFFSETS[type].y,
+        SPRITESHEET_OFFSETS[type].h,
+        SPRITESHEET_OFFSETS[type].w,
+        xStart,
+        yStart,
+        PANEL_TOWER_SIZE,
+        PANEL_TOWER_SIZE
+      );
+    });
 };
 
 CanvasDisplay.prototype.getTowerPanelPosition = function(towerType, index) {
@@ -207,24 +207,24 @@ CanvasDisplay.prototype.setMouseTarget = function(userInput) {
     );
   };
 
-  const selectedTower = PANEL_TOWERS.map((tower, index) =>
-    this.getTowerPanelPosition(tower, index)
-  ).find(tower => {
-    return hasClickedElement(
-      mouseX,
-      mouseY,
-      tower.xStart,
-      tower.xEnd,
-      tower.yStart,
-      tower.yEnd
-    );
-  });
+  const selectedTower = TOWERS.map(({ type }) => type)
+    .map((type, index) => this.getTowerPanelPosition(type, index))
+    .find(towerPanel => {
+      return hasClickedElement(
+        mouseX,
+        mouseY,
+        towerPanel.xStart,
+        towerPanel.xEnd,
+        towerPanel.yStart,
+        towerPanel.yEnd
+      );
+    });
 
   if (!selectedTower) return userInput;
 
   return {
     ...userInput,
-    target: selectedTower.type,
+    mouseTarget: selectedTower.type,
     buttonStates: { ...userInput.buttonStates }
   };
 };

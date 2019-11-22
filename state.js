@@ -1,4 +1,4 @@
-import { ACTOR_STATUS, MOUSE_BUTTON } from './const.js';
+import { ACTOR_STATUS, MOUSE_BUTTON, KEY } from './const.js';
 
 const STARTING_LIVES = 100;
 const STARTING_MONEY = 200;
@@ -9,13 +9,15 @@ export class State {
     spawns,
     actors = [],
     lives = STARTING_LIVES,
-    money = STARTING_MONEY
+    money = STARTING_MONEY,
+    display = { towerToBuild: null }
   ) {
     this.level = level;
     this.spawns = spawns;
     this.actors = actors;
     this.lives = lives;
     this.money = money;
+    this.display = display;
   }
 
   static start(level, spawns) {
@@ -24,10 +26,7 @@ export class State {
 }
 
 State.prototype.update = function(time, userInput) {
-  if (userInput.target) {
-    console.log(userInput.target);
-  }
-
+  let canvas = this.setDisplayState(userInput);
   let spawns = this.spawns.map(spawn => spawn.update(time, this.level));
   let actors = spawns
     .map(({ actors }) => actors)
@@ -46,5 +45,26 @@ State.prototype.update = function(time, userInput) {
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
   spawns = spawns.map(spawn => spawn.resetActorQueue());
 
-  return new State(this.level, spawns, actors, lives, money);
+  return new State(this.level, spawns, actors, lives, money, canvas);
+};
+
+State.prototype.setDisplayState = function(userInput) {
+  if (!userInput.mouseTarget && !this.display.towerToBuild) {
+    return this.display;
+  }
+
+  if (!this.display.towerToBuild) {
+    return { ...this.display, towerToBuild: userInput.mouseTarget };
+  }
+
+  const hasCancelledBuilding =
+    userInput.buttonStates[MOUSE_BUTTON.RIGHT] ||
+    userInput.buttonStates[KEY.ESCAPE];
+
+  if (hasCancelledBuilding) {
+    return { ...this.display, towerToBuild: null };
+  }
+
+  const hasTriedBuildingTower = userInput.buttonStates[MOUSE_BUTTON.LEFT];
+  return { ...this.display, towerToBuild: this.display.towerToBuild };
 };

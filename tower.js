@@ -1,6 +1,6 @@
-import { Vector } from './vector';
+import { Vector } from './vector.js';
 
-const TOWERS = [
+export const TOWERS = [
   {
     type: 'machine-gun',
     fireRate: 0.2,
