@@ -103,40 +103,40 @@ CanvasDisplay.prototype.drawPanel = function() {
   this.context.fillStyle = 'black';
   this.context.fillRect(xStart, yStart, PANEL_WIDTH, this.canvas.height);
 
-  TOWERS.map(({ type }) => type)
-    .map((type, index) => this.getTowerPanelPosition(type, index))
-    .forEach(({ type, xStart, yStart }) => {
-      this.context.drawImage(
-        SPRITESHEET,
-        SPRITESHEET_OFFSETS[type].x,
-        SPRITESHEET_OFFSETS[type].y,
-        SPRITESHEET_OFFSETS[type].h,
-        SPRITESHEET_OFFSETS[type].w,
-        xStart,
-        yStart,
-        PANEL_TOWER_SIZE,
-        PANEL_TOWER_SIZE
-      );
-    });
+  this.mapTowersToPanelPositions(TOWERS).forEach(({ type, xStart, yStart }) => {
+    this.context.drawImage(
+      SPRITESHEET,
+      SPRITESHEET_OFFSETS[type].x,
+      SPRITESHEET_OFFSETS[type].y,
+      SPRITESHEET_OFFSETS[type].h,
+      SPRITESHEET_OFFSETS[type].w,
+      xStart,
+      yStart,
+      PANEL_TOWER_SIZE,
+      PANEL_TOWER_SIZE
+    );
+  });
 };
 
-CanvasDisplay.prototype.getTowerPanelPosition = function(towerType, index) {
+CanvasDisplay.prototype.mapTowersToPanelPositions = function(towers) {
   const xTowerOffset = (PANEL_WIDTH - PANEL_TOWER_SIZE) / 2;
   const yTowerOffset = PANEL_MARGIN;
-
-  const margin = index % 2 ? PANEL_MARGIN : 0;
   const xStart = this.levelWidth + xTowerOffset;
   const xEnd = xStart + PANEL_TOWER_SIZE;
-  const yStart = index * PANEL_TOWER_SIZE + margin + yTowerOffset;
-  const yEnd = yStart + PANEL_TOWER_SIZE;
 
-  return {
-    type: towerType,
-    xStart,
-    xEnd,
-    yStart,
-    yEnd
-  };
+  return towers.map(({ type }, index) => {
+    const margin = index % 2 ? PANEL_MARGIN : 0;
+    const yStart = index * PANEL_TOWER_SIZE + margin + yTowerOffset;
+    const yEnd = yStart + PANEL_TOWER_SIZE;
+
+    return {
+      type,
+      xStart,
+      xEnd,
+      yStart,
+      yEnd
+    };
+  });
 };
 
 CanvasDisplay.prototype.drawStatistics = function(lives) {
@@ -207,9 +207,8 @@ CanvasDisplay.prototype.setMouseTarget = function(userInput) {
     );
   };
 
-  const selectedTower = TOWERS.map(({ type }) => type)
-    .map((type, index) => this.getTowerPanelPosition(type, index))
-    .find(towerPanel => {
+  const selectedTower = this.mapTowersToPanelPositions(TOWERS).find(
+    towerPanel => {
       return hasClickedElement(
         mouseX,
         mouseY,
@@ -218,7 +217,8 @@ CanvasDisplay.prototype.setMouseTarget = function(userInput) {
         towerPanel.yStart,
         towerPanel.yEnd
       );
-    });
+    }
+  );
 
   if (!selectedTower) return userInput;
 

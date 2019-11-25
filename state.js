@@ -40,7 +40,7 @@ State.prototype.update = function(time, userInput) {
 
   const lives = actors
     .filter(({ status }) => status === ACTOR_STATUS.SURVIVED)
-    .reduce((total, _) => (total > 1 ? total - 1 : total), this.lives);
+    .reduce((total, _) => (total > 0 ? total - 1 : total), this.lives);
 
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
   spawns = spawns.map(spawn => spawn.resetActorQueue());
