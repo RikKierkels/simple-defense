@@ -32,7 +32,7 @@ State.prototype.update = function(time, userInput) {
     .map(({ actors }) => actors)
     .flat()
     .concat(this.actors);
-  actors = actors.map(actor => actor.update(time, this));
+  actors = actors.map(actor => actor.update(time));
 
   const money = actors
     .filter(({ status }) => status === ACTOR_STATUS.DEAD)
@@ -40,7 +40,7 @@ State.prototype.update = function(time, userInput) {
 
   const lives = actors
     .filter(({ status }) => status === ACTOR_STATUS.SURVIVED)
-    .reduce((total, _) => total - 1, this.lives);
+    .reduce((total, _) => (total > 1 ? total - 1 : total), this.lives);
 
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
   spawns = spawns.map(spawn => spawn.resetActorQueue());
