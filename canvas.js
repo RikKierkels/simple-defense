@@ -47,7 +47,7 @@ CanvasDisplay.prototype.syncState = function(state, input) {
   this.drawActors(state.actors);
   this.drawPanel();
   this.drawStatistics(state.lives);
-  this.drawTowerPreview(state.level, input);
+  this.drawTowerPreview(state.level, input, state.display);
 };
 
 CanvasDisplay.prototype.drawBackground = function(level) {
@@ -146,25 +146,24 @@ CanvasDisplay.prototype.drawStatistics = function(lives) {
 };
 
 // TODO: GUARD CLAUSE & REFACTOR
-CanvasDisplay.prototype.drawTowerPreview = function(level, userInput) {
-  let { mouseX, mouseY, hasMoved } = userInput;
+CanvasDisplay.prototype.drawTowerPreview = function(
+  level,
+  userInput,
+  displayState
+) {
+  let { mouseX, mouseY } = userInput;
   const hasMovedOutOfLevelBounds =
     mouseX > this.levelWidth || mouseY > this.canvas.height;
 
-  if (!hasMoved || hasMovedOutOfLevelBounds) {
+  if (!displayState.towerToBuild || hasMovedOutOfLevelBounds) {
     return;
   }
 
-  const tower = {
-    type: 'machine-gun',
-    size: new Vector(1, 1),
-    range: new Vector(2, 2)
-  };
+  const tower = TOWERS.find(({ type }) => type === displayState.towerToBuild);
 
   const scaledTowerSize = tower.size.times(SCALE);
-  const mousePointerOffset = 5;
-  mouseX = mouseX - scaledTowerSize.x / 2 - mousePointerOffset;
-  mouseY = mouseY - scaledTowerSize.y / 2 - mousePointerOffset;
+  mouseX = mouseX - scaledTowerSize.x / 2;
+  mouseY = mouseY - scaledTowerSize.y / 2;
 
   const nearestTileX = Math.round(mouseX / SCALE);
   const nearestTileY = Math.round(mouseY / SCALE);
@@ -196,20 +195,42 @@ CanvasDisplay.prototype.drawTowerPreview = function(level, userInput) {
   this.context.stroke();
 };
 
-// TODO: Needs some refactoring
-CanvasDisplay.prototype.setMouseTarget = function(userInput) {
-  if (!userInput.buttonStates[MOUSE_BUTTON.LEFT]) return userInput;
+// TODO: Rename
+CanvasDisplay.prototype.getMouseTargetElement = function(userInput, level) {
+  if (!userInput.buttonStates[MOUSE_BUTTON.LEFT]) {
+    return { tile: null, panelTower: null };
+  }
 
   const { mouseX, mouseY } = userInput;
-  const hasClickedElement = (mouseX, mouseY, xStart, xEnd, yStart, yEnd) => {
+  const hasClickedOnBackground = mouseX < this.levelWidth;
+
+  return hasClickedOnBackground
+    ? this.getClickedTileInBackground(mouseX, mouseY, level)
+    : this.getClickedTowerInPanel(mouseX, mouseY);
+};
+
+CanvasDisplay.prototype.getClickedTileInBackground = function(
+  mouseX,
+  mouseY,
+  level
+) {
+  const tileX = Math.floor(mouseX / SCALE);
+  const tileY = Math.floor(mouseY / SCALE);
+  const tile = level.rows[tileY][tileX];
+
+  return { tile, panelTower: null };
+};
+
+CanvasDisplay.prototype.getClickedTowerInPanel = function(mouseX, mouseY) {
+  const hasClickedOnTower = (mouseX, mouseY, xStart, xEnd, yStart, yEnd) => {
     return (
       mouseX >= xStart && mouseX <= xEnd && mouseY >= yStart && mouseY <= yEnd
     );
   };
 
-  const selectedTower = this.mapTowersToPanelPositions(TOWERS).find(
+  const clickedTower = this.mapTowersToPanelPositions(TOWERS).find(
     towerPanel => {
-      return hasClickedElement(
+      return hasClickedOnTower(
         mouseX,
         mouseY,
         towerPanel.xStart,
@@ -220,11 +241,7 @@ CanvasDisplay.prototype.setMouseTarget = function(userInput) {
     }
   );
 
-  if (!selectedTower) return userInput;
-
-  return {
-    ...userInput,
-    mouseTarget: selectedTower.type,
-    buttonStates: { ...userInput.buttonStates }
-  };
+  return clickedTower
+    ? { tile: null, panelTower: clickedTower.type }
+    : { tile: null, panelTower: null };
 };

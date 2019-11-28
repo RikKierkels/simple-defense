@@ -44,10 +44,9 @@ function runWave(display, state) {
 
   return new Promise(resolve => {
     runAnimation(time => {
-      // TODO: RENAME
-      let input = display.setMouseTarget(userInput);
-      state = state.update(time, input);
-      display.syncState(state, input);
+      const mouseTarget = display.getMouseTargetElement(userInput, state.level);
+      state = state.update(time, userInput, mouseTarget);
+      display.syncState(state, userInput);
       if (state.lives > 0) {
         return true;
       } else if (ending > 0) {
@@ -88,16 +87,18 @@ function trackUserInput() {
     mouseTarget: null
   };
 
-  function moved({ clientX, clientY }) {
+  function moved({ clientX, clientY, offsetX, offsetY }) {
     input.hasMoved = true;
-    input.mouseX = clientX;
-    input.mouseY = clientY;
+    input.mouseX = clientX - (clientX - offsetX);
+    input.mouseY = clientY - (clientY - offsetY);
   }
 
   canvas.addEventListener('mousedown', event => {
+    // TODO Combine calculation of mouseX/mouseY
+    const { clientX, clientY, offsetX, offsetY } = event;
     input.buttonStates[event.button] = true;
-    input.mouseX = event.clientX;
-    input.mouseY = event.clientY;
+    input.mouseX = clientX - (clientX - offsetX);
+    input.mouseY = clientY - (clientY - offsetY);
 
     canvas.addEventListener('mousemove', moved);
     event.stopPropagation();

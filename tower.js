@@ -4,14 +4,14 @@ export const TOWERS = [
   {
     type: 'machine-gun',
     fireRate: 0.2,
-    range: { x: 2, y: 2 },
-    size: { x: 1, y: 1 }
+    range: new Vector(2, 2),
+    size: new Vector(1, 1)
   },
   {
     type: 'rockets',
     fireRate: 0.8,
-    range: { x: 4, y: 4 },
-    size: { x: 1, y: 1 }
+    range: new Vector(4, 4),
+    size: new Vector(1, 1)
   }
 ];
 

@@ -10,7 +10,7 @@ export class State {
     actors = [],
     lives = STARTING_LIVES,
     money = STARTING_MONEY,
-    display = { towerToBuild: null }
+    display = { towerToBuild: null, selectedTower: null }
   ) {
     this.level = level;
     this.spawns = spawns;
@@ -25,8 +25,8 @@ export class State {
   }
 }
 
-State.prototype.update = function(time, userInput) {
-  let canvas = this.setDisplayState(userInput);
+State.prototype.update = function(time, userInput, mouseTarget) {
+  let displayState = this.setDisplayState(userInput, mouseTarget);
   let spawns = this.spawns.map(spawn => spawn.update(time, this.level));
   let actors = spawns
     .map(({ actors }) => actors)
@@ -45,26 +45,32 @@ State.prototype.update = function(time, userInput) {
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
   spawns = spawns.map(spawn => spawn.resetActorQueue());
 
-  return new State(this.level, spawns, actors, lives, money, canvas);
+  return new State(this.level, spawns, actors, lives, money, displayState);
 };
 
-State.prototype.setDisplayState = function(userInput) {
-  if (!userInput.mouseTarget && !this.display.towerToBuild) {
+State.prototype.setDisplayState = function(userInput, mouseTarget) {
+  if (!mouseTarget.panelTower && !mouseTarget.tile) {
     return this.display;
   }
 
+  console.log(this.display);
   if (!this.display.towerToBuild) {
-    return { ...this.display, towerToBuild: userInput.mouseTarget };
+    return { ...this.display, towerToBuild: mouseTarget.panelTower };
   }
 
-  const hasCancelledBuilding =
+  const hasCancelled =
     userInput.buttonStates[MOUSE_BUTTON.RIGHT] ||
     userInput.buttonStates[KEY.ESCAPE];
 
-  if (hasCancelledBuilding) {
+  if (hasCancelled) {
     return { ...this.display, towerToBuild: null };
   }
 
-  const hasTriedBuildingTower = userInput.buttonStates[MOUSE_BUTTON.LEFT];
+  const hasClicked = userInput.buttonStates[MOUSE_BUTTON.LEFT];
+
+  if (hasClicked) {
+    console.log('HAS TRIED BUILDING TOWER AT POSITION', mouseTarget.tile);
+  }
+
   return { ...this.display, towerToBuild: this.display.towerToBuild };
 };
