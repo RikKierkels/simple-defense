@@ -44,6 +44,7 @@ export class CanvasDisplay {
 
 CanvasDisplay.prototype.syncState = function(state, input) {
   this.drawBackground(state.level);
+  this.drawTowers(state.towers);
   this.drawActors(state.actors);
   this.drawPanel();
   this.drawStatistics(state.lives);
@@ -76,6 +77,27 @@ CanvasDisplay.prototype.drawBackground = function(level) {
   }
 };
 
+CanvasDisplay.prototype.drawTowers = function(towers) {
+  for (const tower of towers) {
+    const width = tower.size.x * SCALE;
+    const height = tower.size.y * SCALE;
+    const sprite = SPRITESHEET_OFFSETS[tower.type];
+
+    this.context.drawImage(
+      SPRITESHEET,
+      sprite.x,
+      sprite.y,
+      sprite.w,
+      sprite.h,
+      tower.pos.x * SCALE,
+      tower.pos.y * SCALE,
+      width,
+      height
+    );
+  }
+};
+
+// TODO: Direction
 CanvasDisplay.prototype.drawActors = function(actors) {
   for (const actor of actors) {
     const width = actor.size.x * SCALE;
@@ -195,8 +217,7 @@ CanvasDisplay.prototype.drawTowerPreview = function(
   this.context.stroke();
 };
 
-// TODO: Rename
-CanvasDisplay.prototype.getMouseTargetElement = function(userInput, level) {
+CanvasDisplay.prototype.getClickedOnElement = function(userInput) {
   if (!userInput.buttonStates[MOUSE_BUTTON.LEFT]) {
     return { tile: null, panelTower: null };
   }
@@ -205,20 +226,15 @@ CanvasDisplay.prototype.getMouseTargetElement = function(userInput, level) {
   const hasClickedOnBackground = mouseX < this.levelWidth;
 
   return hasClickedOnBackground
-    ? this.getClickedTileInBackground(mouseX, mouseY, level)
+    ? this.getClickedTileInBackground(mouseX, mouseY)
     : this.getClickedTowerInPanel(mouseX, mouseY);
 };
 
-CanvasDisplay.prototype.getClickedTileInBackground = function(
-  mouseX,
-  mouseY,
-  level
-) {
+CanvasDisplay.prototype.getClickedTileInBackground = function(mouseX, mouseY) {
   const tileX = Math.floor(mouseX / SCALE);
   const tileY = Math.floor(mouseY / SCALE);
-  const tile = level.rows[tileY][tileX];
 
-  return { tile, panelTower: null };
+  return { tile: { x: tileX, y: tileY }, panelTower: null };
 };
 
 CanvasDisplay.prototype.getClickedTowerInPanel = function(mouseX, mouseY) {

@@ -44,8 +44,8 @@ function runWave(display, state) {
 
   return new Promise(resolve => {
     runAnimation(time => {
-      const mouseTarget = display.getMouseTargetElement(userInput, state.level);
-      state = state.update(time, userInput, mouseTarget);
+      const clickedOn = display.getClickedOnElement(userInput);
+      state = state.update(time, userInput, clickedOn);
       display.syncState(state, userInput);
       if (state.lives > 0) {
         return true;
