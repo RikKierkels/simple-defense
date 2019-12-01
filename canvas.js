@@ -146,7 +146,7 @@ CanvasDisplay.prototype.mapTowersToPanelPositions = function(towers) {
   const xStart = this.levelWidth + xTowerOffset;
   const xEnd = xStart + PANEL_TOWER_SIZE;
 
-  return towers.map(({ type }, index) => {
+  return Object.keys(towers).map((type, index) => {
     const margin = index % 2 ? PANEL_MARGIN : 0;
     const yStart = index * PANEL_TOWER_SIZE + margin + yTowerOffset;
     const yEnd = yStart + PANEL_TOWER_SIZE;
@@ -167,21 +167,16 @@ CanvasDisplay.prototype.drawStatistics = function(lives) {
   this.context.fillText(lives, 20, this.canvas.height - 20);
 };
 
-// TODO: GUARD CLAUSE & REFACTOR
-CanvasDisplay.prototype.drawTowerPreview = function(
-  level,
-  userInput,
-  displayState
-) {
+CanvasDisplay.prototype.drawTowerPreview = function(level, userInput, display) {
   let { mouseX, mouseY } = userInput;
   const hasMovedOutOfLevelBounds =
     mouseX > this.levelWidth || mouseY > this.canvas.height;
 
-  if (!displayState.towerToBuild || hasMovedOutOfLevelBounds) {
+  if (!display.typeOfTowerToBuild || hasMovedOutOfLevelBounds) {
     return;
   }
 
-  const tower = TOWERS.find(({ type }) => type === displayState.towerToBuild);
+  const tower = TOWERS[display.typeOfTowerToBuild];
 
   const scaledTowerSize = tower.size.times(SCALE);
   mouseX = mouseX - scaledTowerSize.x / 2;
@@ -219,7 +214,7 @@ CanvasDisplay.prototype.drawTowerPreview = function(
 
 CanvasDisplay.prototype.getClickedOnElement = function(userInput) {
   if (!userInput.buttonStates[MOUSE_BUTTON.LEFT]) {
-    return { tile: null, panelTower: null };
+    return { tile: null, towerType: null };
   }
 
   const { mouseX, mouseY } = userInput;
@@ -234,9 +229,10 @@ CanvasDisplay.prototype.getClickedTileInBackground = function(mouseX, mouseY) {
   const tileX = Math.floor(mouseX / SCALE);
   const tileY = Math.floor(mouseY / SCALE);
 
-  return { tile: { x: tileX, y: tileY }, panelTower: null };
+  return { tile: { x: tileX, y: tileY }, towerType: null };
 };
 
+// TODO: Rename paneltower to type
 CanvasDisplay.prototype.getClickedTowerInPanel = function(mouseX, mouseY) {
   const hasClickedOnTower = (mouseX, mouseY, xStart, xEnd, yStart, yEnd) => {
     return (
@@ -258,6 +254,6 @@ CanvasDisplay.prototype.getClickedTowerInPanel = function(mouseX, mouseY) {
   );
 
   return clickedTower
-    ? { tile: null, panelTower: clickedTower.type }
-    : { tile: null, panelTower: null };
+    ? { tile: null, towerType: clickedTower.type }
+    : { tile: null, towerType: null };
 };

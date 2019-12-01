@@ -1,7 +1,7 @@
 import { ACTOR_STATUS, MOUSE_BUTTON, KEY } from './const.js';
-import { canBuyTower } from './tower.js';
 import { Tower } from './tower.js';
 import { Vector } from './vector.js';
+import { TOWERS } from './tower.js';
 
 const STARTING_LIVES = 100;
 const STARTING_MONEY = 200;
@@ -14,7 +14,7 @@ export class State {
     towers = [],
     lives = STARTING_LIVES,
     money = STARTING_MONEY,
-    display = { towerToBuild: null }
+    display = { typeOfTowerToBuild: null }
   ) {
     this.level = level;
     this.spawns = spawns;
@@ -31,11 +31,11 @@ export class State {
 }
 
 State.prototype.update = function(time, userInput, clickedOn) {
-  let displayState = this.getDisplayState(userInput, clickedOn);
+  let display = this.getDisplayState(userInput, clickedOn);
   const newTower = this.buildTower(clickedOn.tile);
 
   if (newTower) {
-    displayState = { towerToBuild: null };
+    display = { typeOfTowerToBuild: null };
   }
 
   const towers = newTower ? [...this.towers, newTower] : this.towers;
@@ -58,20 +58,12 @@ State.prototype.update = function(time, userInput, clickedOn) {
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
   spawns = spawns.map(spawn => spawn.resetActorQueue());
 
-  return new State(
-    this.level,
-    spawns,
-    actors,
-    towers,
-    lives,
-    money,
-    displayState
-  );
+  return new State(this.level, spawns, actors, towers, lives, money, display);
 };
 
 // TODO: REFACTOR TO CLASS WITH DISPLAY STATE
 State.prototype.getDisplayState = function(userInput, clickedOn) {
-  const isBuildingTower = this.display.towerToBuild !== null;
+  const isBuildingTower = this.display.typeOfTowerToBuild !== null;
 
   return isBuildingTower
     ? this.getDisplayStateWhileBuildingTower(userInput)
@@ -83,24 +75,22 @@ State.prototype.getDisplayStateWhileBuildingTower = function(userInput) {
     userInput.buttonStates[KEY.ESCAPE] ||
     userInput.buttonStates[MOUSE_BUTTON.RIGHT];
 
-  return hasCancelled ? { towerToBuild: null } : this.display;
+  return hasCancelled ? { typeOfTowerToBuild: null } : this.display;
 };
 
 State.prototype.getDisplayStateForBuildingTower = function(
   userInput,
   clickedOn
 ) {
-  if (!clickedOn.panelTower) {
-    return { towerToBuild: null };
-  }
+  if (!clickedOn.towerType) return { typeOfTowerToBuild: null };
 
-  return canBuyTower(clickedOn.panelTower, this.money)
-    ? { towerToBuild: clickedOn.panelTower }
-    : { towerToBuild: null };
+  return TOWERS[clickedOn.towerType].cost <= this.money
+    ? { typeOfTowerToBuild: clickedOn.towerType }
+    : { typeOfTowerToBuild: null };
 };
 
 State.prototype.buildTower = function(tile) {
-  if (!tile) return;
+  if (!tile || !this.display.typeOfTowerToBuild) return;
 
   const isTileBlockedByLevel = this.level.isTileBlocked(tile.x, tile.y);
   const isTileBlockedByOtherTower = this.towers.some(
@@ -111,6 +101,5 @@ State.prototype.buildTower = function(tile) {
     return;
   }
 
-  console.log(this.display.towerToBuild);
-  return new Tower(this.display.towerToBuild, new Vector(tile.x, tile.y));
+  return new Tower(this.display.typeOfTowerToBuild, new Vector(tile.x, tile.y));
 };
