@@ -47,7 +47,7 @@ CanvasDisplay.prototype.syncState = function(state, input) {
   this.drawTowers(state.towers);
   this.drawActors(state.actors);
   this.drawPanel();
-  this.drawStatistics(state.lives);
+  this.drawStatistics(state.lives, state.money);
   this.drawTowerPreview(state.level, input, state.display);
 };
 
@@ -161,10 +161,18 @@ CanvasDisplay.prototype.mapTowersToPanelPositions = function(towers) {
   });
 };
 
-CanvasDisplay.prototype.drawStatistics = function(lives) {
+CanvasDisplay.prototype.drawStatistics = function(lives, money) {
   this.context.font = '28px Georgia';
   this.context.fillStyle = 'white';
-  this.context.fillText(lives, 20, this.canvas.height - 20);
+
+  const livesTextWidth = this.context.measureText(lives).width;
+
+  this.context.fillText(lives, SCALE, this.canvas.height - SCALE);
+  this.context.fillText(
+    `$${money}`,
+    livesTextWidth + SCALE * 2,
+    this.canvas.height - SCALE
+  );
 };
 
 CanvasDisplay.prototype.drawTowerPreview = function(level, userInput, display) {
