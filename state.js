@@ -1,7 +1,7 @@
-import { ACTOR_STATUS, MOUSE_BUTTON, KEY } from './const.js';
+import { ACTOR_STATUS } from './const.js';
 import { Tower } from './tower.js';
 import { Vector } from './vector.js';
-import { TOWERS } from './tower.js';
+import { DisplayState } from './display-state.js';
 
 const STARTING_LIVES = 100;
 const STARTING_MONEY = 200;
@@ -14,7 +14,7 @@ export class State {
     towers = [],
     lives = STARTING_LIVES,
     money = STARTING_MONEY,
-    display = { typeOfTowerToBuild: null }
+    display = new DisplayState(null)
   ) {
     this.level = level;
     this.spawns = spawns;
@@ -31,15 +31,6 @@ export class State {
 }
 
 State.prototype.update = function(time, userInput, clickedOn) {
-  let display = this.getDisplayState(userInput, clickedOn);
-  const newTower = this.buildTower(clickedOn.tile);
-
-  if (newTower) {
-    display = { typeOfTowerToBuild: null };
-  }
-
-  const towers = newTower ? [...this.towers, newTower] : this.towers;
-
   let spawns = this.spawns.map(spawn => spawn.update(time, this.level));
   let actors = spawns
     .map(({ actors }) => actors)
@@ -47,9 +38,9 @@ State.prototype.update = function(time, userInput, clickedOn) {
     .concat(this.actors);
   actors = actors.map(actor => actor.update(time));
 
-  const money = actors
+  let money = actors
     .filter(({ status }) => status === ACTOR_STATUS.DEAD)
-    .reduce((total, { reward }) => total + reward, this.reward);
+    .reduce((total, { status, reward }) => total + reward, this.money);
 
   const lives = actors
     .filter(({ status }) => status === ACTOR_STATUS.SURVIVED)
@@ -58,39 +49,22 @@ State.prototype.update = function(time, userInput, clickedOn) {
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
   spawns = spawns.map(spawn => spawn.resetActorQueue());
 
+  let display = this.display.syncInput(userInput, clickedOn);
+  const newTower = this.buildTower(clickedOn.tile, money);
+
+  if (newTower) {
+    display = this.display.clear();
+    money = money - newTower.cost;
+  }
+
+  const towers = newTower ? [...this.towers, newTower] : this.towers;
+
   return new State(this.level, spawns, actors, towers, lives, money, display);
 };
 
-// TODO: REFACTOR TO CLASS WITH DISPLAY STATE
-State.prototype.getDisplayState = function(userInput, clickedOn) {
-  const isBuildingTower = this.display.typeOfTowerToBuild !== null;
-
-  return isBuildingTower
-    ? this.getDisplayStateWhileBuildingTower(userInput)
-    : this.getDisplayStateForBuildingTower(userInput, clickedOn);
-};
-
-State.prototype.getDisplayStateWhileBuildingTower = function(userInput) {
-  const hasCancelled =
-    userInput.buttonStates[KEY.ESCAPE] ||
-    userInput.buttonStates[MOUSE_BUTTON.RIGHT];
-
-  return hasCancelled ? { typeOfTowerToBuild: null } : this.display;
-};
-
-State.prototype.getDisplayStateForBuildingTower = function(
-  userInput,
-  clickedOn
-) {
-  if (!clickedOn.towerType) return { typeOfTowerToBuild: null };
-
-  return TOWERS[clickedOn.towerType].cost <= this.money
-    ? { typeOfTowerToBuild: clickedOn.towerType }
-    : { typeOfTowerToBuild: null };
-};
-
-State.prototype.buildTower = function(tile) {
-  if (!tile || !this.display.typeOfTowerToBuild) return;
+State.prototype.buildTower = function(tile, money) {
+  const towerType = this.display.typeOfTowerToBuild;
+  if (!tile || !towerType) return;
 
   const isTileBlockedByLevel = this.level.isTileBlocked(tile.x, tile.y);
   const isTileBlockedByOtherTower = this.towers.some(
@@ -101,5 +75,6 @@ State.prototype.buildTower = function(tile) {
     return;
   }
 
-  return new Tower(this.display.typeOfTowerToBuild, new Vector(tile.x, tile.y));
+  const tower = new Tower(towerType, new Vector(tile.x, tile.y));
+  return tower.cost <= money ? tower : null;
 };
