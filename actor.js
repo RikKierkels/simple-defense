@@ -1,5 +1,6 @@
 import { Vector } from './vector.js';
 import { ACTOR_STATUS, DIRECTION } from './const.js';
+import { generateId } from './util.js';
 
 export const actorTypes = {
   goblin: {
@@ -17,12 +18,13 @@ export const actorTypes = {
 };
 
 export class Actor {
-  constructor(type, pos, goal, status = ACTOR_STATUS.ALIVE) {
+  constructor(id, type, pos, goal, status = ACTOR_STATUS.ALIVE) {
     const health = actorTypes[type].health;
     const speed = actorTypes[type].speed;
     const size = actorTypes[type].size;
     const reward = actorTypes[type].reward;
 
+    this.id = id;
     this.type = type;
     this.health = health;
     this.pos = pos;
@@ -34,7 +36,8 @@ export class Actor {
   }
 
   static create(type, pos, goal) {
-    return new Actor(type, pos, goal);
+    const id = generateId();
+    return new Actor(id, type, pos, goal);
   }
 }
 
@@ -63,17 +66,15 @@ Actor.prototype.moveHorizontally = function(direction, xNext, time) {
     direction === DIRECTION.RIGHT ? this.speed.x : this.speed.x * -1;
 
   const distanceTravelled = new Vector(speed, 0).times(time);
-  const newPos = this.pos.plus(distanceTravelled);
+  let newPos = this.pos.plus(distanceTravelled);
 
   const hasReachedGoal =
     (direction === DIRECTION.RIGHT && newPos.x > xNext) ||
     (direction === DIRECTION.LEFT && newPos.x < xNext);
 
-  if (hasReachedGoal) {
-    return new Actor(this.type, this.goal.pos, this.goal.next, this.status);
-  }
-
-  return new Actor(this.type, newPos, this.goal, this.status);
+  return hasReachedGoal
+    ? new Actor(this.id, this.type, this.goal.pos, this.goal.next, this.status)
+    : new Actor(this.id, this.type, newPos, this.goal, this.status);
 };
 
 Actor.prototype.moveVertically = function(direction, yNext, time) {
@@ -86,17 +87,22 @@ Actor.prototype.moveVertically = function(direction, yNext, time) {
     (direction === DIRECTION.DOWN && newPos.y > yNext) ||
     (direction === DIRECTION.UP && newPos.y < yNext);
 
-  if (hasReachedGoal) {
-    return new Actor(this.type, this.goal.pos, this.goal.next, this.status);
-  }
-
-  return new Actor(this.type, newPos, this.goal, this.status);
+  // TODO: Refactor?
+  return hasReachedGoal
+    ? new Actor(this.id, this.type, this.goal.pos, this.goal.next, this.status)
+    : new Actor(this.id, this.type, newPos, this.goal, this.status);
 };
 
 Actor.prototype.survived = function() {
-  return new Actor(this.type, this.pos, this.goal, ACTOR_STATUS.SURVIVED);
+  return new Actor(
+    this.id,
+    this.type,
+    this.pos,
+    this.goal,
+    ACTOR_STATUS.SURVIVED
+  );
 };
 
 Actor.prototype.died = function() {
-  return new Actor(this.type, this.pos, this.goal, ACTOR_STATUS.DEAD);
+  return new Actor(this.id, this.type, this.pos, this.goal, ACTOR_STATUS.DEAD);
 };

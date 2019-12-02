@@ -12,6 +12,7 @@ export class State {
     spawns,
     actors = [],
     towers = [],
+    projectiles = [],
     lives = STARTING_LIVES,
     money = STARTING_MONEY,
     display = new DisplayState(null)
@@ -20,6 +21,7 @@ export class State {
     this.spawns = spawns;
     this.actors = actors;
     this.towers = towers;
+    this.projectiles = projectiles;
     this.lives = lives;
     this.money = money;
     this.display = display;
@@ -51,15 +53,25 @@ State.prototype.update = function(time, userInput, clickedOn) {
 
   let display = this.display.syncInput(userInput, clickedOn);
   const newTower = this.buildTower(clickedOn.tile, money);
+  let towers = newTower ? [...this.towers, newTower] : this.towers;
 
   if (newTower) {
     display = this.display.clear();
     money = money - newTower.cost;
   }
 
-  const towers = newTower ? [...this.towers, newTower] : this.towers;
+  towers = towers.map(tower => tower.update(time, actors));
 
-  return new State(this.level, spawns, actors, towers, lives, money, display);
+  return new State(
+    this.level,
+    spawns,
+    actors,
+    towers,
+    this.projectiles,
+    lives,
+    money,
+    display
+  );
 };
 
 State.prototype.buildTower = function(tile, money) {
