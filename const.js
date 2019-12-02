@@ -19,3 +19,8 @@ export const MOUSE_BUTTON = {
 export const KEY = {
   ESCAPE: 'Escape'
 };
+
+export const PROJECTILE_TYPE = {
+  BULLET: 'bullet',
+  ROCKET: 'rocket'
+};

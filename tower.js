@@ -1,18 +1,21 @@
 import { Vector } from './vector.js';
 import { Timer } from './timer.js';
+import { PROJECTILE_TYPE } from './const.js';
 
 export const TOWERS = {
   'machine-gun': {
     cost: 30,
     fireRate: 0.2,
     range: new Vector(2, 2),
-    size: new Vector(1, 1)
+    size: new Vector(1, 1),
+    projectileType: PROJECTILE_TYPE.BULLET
   },
   'rockets': {
     cost: 40,
     fireRate: 0.8,
     range: new Vector(4, 4),
-    size: new Vector(1, 1)
+    size: new Vector(1, 1),
+    projectileType: PROJECTILE_TYPE.ROCKET
   }
 };
 
@@ -22,6 +25,7 @@ export class Tower {
     this.cost = TOWERS[type].cost;
     this.range = TOWERS[type].range;
     this.size = TOWERS[type].size;
+    this.projectileType = TOWERS[type].projectileType;
     this.pos = pos;
     this.timer = timer ? timer : Timer.start(TOWERS[type].fireRate);
     this.targetId = targetId;
@@ -36,11 +40,11 @@ Tower.prototype.update = function(time, actors) {
     return new Tower(this.type, this.pos, timer);
   }
 
-  const targetId = this.findClosestActor(actors);
-  return new Tower(this.type, this.pos, timer, targetId);
+  const target = this.findTarget(actors);
+  return new Tower(this.type, this.pos, timer, target.id);
 };
 
-Tower.prototype.findClosestActor = function(actors) {
+Tower.prototype.findTarget = function(actors) {
   let closest;
   let shortestDistance = Number.MAX_VALUE;
 
@@ -50,6 +54,7 @@ Tower.prototype.findClosestActor = function(actors) {
     return Math.pow(diffX, 2) + Math.pow(diffY, 2);
   };
 
+  // TODO: Check if target is in range.
   for (const actor of actors) {
     const distanceToActor = calculateDistance(this.pos, actor.pos);
 
