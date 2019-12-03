@@ -1,6 +1,6 @@
-import { ACTOR_STATUS, DIRECTION, ACTOR_TYPE } from './const.js';
-import { Vector } from './vector.js';
-import { generateId } from './util.js';
+import { ACTOR_STATUS, DIRECTION, ACTOR_TYPE } from '../utils/constants.js';
+import { Vector } from '../utils/vector.js';
+import { generateId } from '../utils/util.js';
 
 const ACTORS = {
   [ACTOR_TYPE.GOBLIN]: {

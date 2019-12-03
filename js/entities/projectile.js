@@ -1,4 +1,4 @@
-import { PROJECTILE_TYPE } from './const.js';
+import { PROJECTILE_TYPE } from '../utils/constants.js';
 
 export const PROJECTILES = {
   [PROJECTILE_TYPE.BULLET]: {},

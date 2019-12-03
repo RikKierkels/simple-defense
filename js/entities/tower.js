@@ -1,6 +1,6 @@
-import { Vector } from './vector.js';
-import { Timer } from './timer.js';
-import { PROJECTILE_TYPE, TOWER_TYPE } from './const.js';
+import { Vector } from '../utils/vector.js';
+import { Timer } from '../utils/timer.js';
+import { PROJECTILE_TYPE, TOWER_TYPE } from '../utils/constants.js';
 
 export const TOWERS = {
   [TOWER_TYPE.MACHINE_GUN]: {

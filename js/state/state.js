@@ -1,6 +1,6 @@
-import { ACTOR_STATUS } from './const.js';
-import { Tower } from './tower.js';
-import { Vector } from './vector.js';
+import { ACTOR_STATUS } from '../utils/constants.js';
+import { Tower } from '../entities/tower.js';
+import { Vector } from '../utils/vector.js';
 import { DisplayState } from './display-state.js';
 
 const STARTING_LIVES = 100;

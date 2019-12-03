@@ -1,6 +1,11 @@
-import { MOUSE_BUTTON, ACTOR_TYPE, TOWER_TYPE, TILE_TYPE } from './const.js';
-import { Vector } from './vector.js';
-import { TOWERS } from './tower.js';
+import {
+  MOUSE_BUTTON,
+  ACTOR_TYPE,
+  TOWER_TYPE,
+  TILE_TYPE
+} from './utils/constants.js';
+import { Vector } from './utils/vector.js';
+import { TOWERS } from './entities/tower.js';
 
 const SCALE = 35;
 const PANEL_TOWER_SIZE = SCALE * 2;

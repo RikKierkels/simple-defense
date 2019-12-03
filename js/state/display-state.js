@@ -1,4 +1,4 @@
-import { KEY, MOUSE_BUTTON } from './const.js';
+import { KEY, MOUSE_BUTTON } from '../utils/constants.js';
 
 export class DisplayState {
   constructor(typeOfTowerToBuild) {

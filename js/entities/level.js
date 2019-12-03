@@ -1,6 +1,6 @@
-import { Vector } from './vector.js';
-import { Path } from './path.js';
-import { TILE_TYPE } from './const.js';
+import { Vector } from '../utils/vector.js';
+import { Path } from '../utils/path.js';
+import { TILE_TYPE } from '../utils/constants.js';
 
 export class Level {
   constructor(plan) {

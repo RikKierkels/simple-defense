@@ -1,8 +1,8 @@
-import { KEY, ACTOR_TYPE } from './const.js';
-import { State } from './state.js';
-import { Level } from './level.js';
+import { KEY, ACTOR_TYPE } from './utils/constants.js';
+import { State } from './state/state.js';
+import { Level } from './entities/level.js';
 import { CanvasDisplay } from './canvas.js';
-import { Spawn } from './spawn.js';
+import { Spawn } from './entities/spawn.js';
 
 const GAME = {
   plan: `
