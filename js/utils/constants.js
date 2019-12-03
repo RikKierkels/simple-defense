@@ -1,14 +1,8 @@
 export const DIRECTION = {
-  UP: 'up',
-  RIGHT: 'right',
-  DOWN: 'down',
-  LEFT: 'left'
-};
-
-export const ACTOR_STATUS = {
-  ALIVE: 'alive',
-  DEAD: 'dead',
-  SURVIVED: 'survived'
+  UP: 0,
+  RIGHT: 1,
+  DOWN: 2,
+  LEFT: 3
 };
 
 export const MOUSE_BUTTON = {
@@ -29,16 +23,28 @@ export const TILE_TYPE = {
 };
 
 export const ACTOR_TYPE = {
-  GOBLIN: 'goblin',
-  ORC: 'orc'
+  GOBLIN: 100,
+  ORC: 101
 };
 
 export const TOWER_TYPE = {
-  MACHINE_GUN: 'machine-gun',
-  ROCKET_LAUNCHER: 'rocket-launcher'
+  MACHINE_GUN: 200,
+  ROCKET_LAUNCHER: 201
 };
 
 export const PROJECTILE_TYPE = {
-  BULLET: 'bullet',
-  ROCKET: 'rocket'
+  BULLET: 300,
+  ROCKET: 301
+};
+
+export const ACTOR_STATUS = {
+  ALIVE: 0,
+  DEAD: 1,
+  SURVIVED: 2
+};
+
+export const PROJECTILE_STATUS = {
+  MOVING_TO_TARGET: 0,
+  DESPAWNED: 1,
+  REACHED_TARGET: 2
 };
