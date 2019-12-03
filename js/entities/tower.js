@@ -41,6 +41,7 @@ Tower.prototype.update = function(time, actors) {
   }
 
   const target = this.findTarget(actors);
+  timer = timer.reset();
   return new Tower(this.type, this.pos, timer, target);
 };
 
@@ -65,4 +66,9 @@ Tower.prototype.findTarget = function(actors) {
 
   // TODO: Check if closest target is within tower range
   return closest;
+};
+
+Tower.prototype.resetTarget = function() {
+  if (!this.target) return this;
+  return new Tower(this.type, this.pos, this.timer, null);
 };

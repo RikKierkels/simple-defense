@@ -14,7 +14,7 @@ export class Spawn {
   }
 }
 
-Spawn.prototype.update = function(time, { path }) {
+Spawn.prototype.update = function(time, path) {
   if (this.remainingCount < 1) return this;
 
   let timer = this.timer.update(time);

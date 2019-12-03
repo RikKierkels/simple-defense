@@ -2,6 +2,7 @@ import { ACTOR_STATUS } from '../utils/constants.js';
 import { Tower } from '../entities/tower.js';
 import { Vector } from '../utils/vector.js';
 import { DisplayState } from './display-state.js';
+import { Projectile } from '../entities/projectile.js';
 
 const STARTING_LIVES = 100;
 const STARTING_MONEY = 200;
@@ -33,7 +34,7 @@ export class State {
 }
 
 State.prototype.update = function(time, userInput, clickedOn) {
-  let spawns = this.spawns.map(spawn => spawn.update(time, this.level));
+  let spawns = this.spawns.map(spawn => spawn.update(time, this.level.path));
   let actors = spawns
     .map(({ actors }) => actors)
     .flat()
@@ -51,6 +52,7 @@ State.prototype.update = function(time, userInput, clickedOn) {
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
   spawns = spawns.map(spawn => spawn.resetActorQueue());
 
+  // TODO: Refactor, this is iffy.
   let display = this.display.syncInput(userInput, clickedOn);
   const newTower = this.buildTower(clickedOn.tile, money);
   let towers = newTower ? [...this.towers, newTower] : this.towers;
@@ -62,12 +64,25 @@ State.prototype.update = function(time, userInput, clickedOn) {
 
   towers = towers.map(tower => tower.update(time, actors));
 
+  let projectiles = towers
+    .filter(({ target }) => target)
+    .map(tower => {
+      return Projectile.create(
+        tower.projectileType,
+        tower.pos,
+        tower.target.pos
+      );
+    })
+    .concat(this.projectiles);
+
+  towers = towers.map(tower => tower.resetTarget());
+
   return new State(
     this.level,
     spawns,
     actors,
     towers,
-    this.projectiles,
+    projectiles,
     lives,
     money,
     display
