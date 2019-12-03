@@ -65,17 +65,14 @@ State.prototype.update = function(time, userInput, clickedOn) {
   towers = towers.map(tower => tower.update(time, actors));
 
   let projectiles = towers
-    .filter(({ target }) => target)
+    .filter(({ targetId }) => targetId)
     .map(tower => {
-      return Projectile.create(
-        tower.projectileType,
-        tower.pos,
-        tower.target.pos
-      );
+      return Projectile.create(tower.projectileType, tower.pos, tower.targetId);
     })
     .concat(this.projectiles);
-
   towers = towers.map(tower => tower.resetTarget());
+
+  projectiles = projectiles.map(projectile => projectile.update(actors));
 
   return new State(
     this.level,

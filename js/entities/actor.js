@@ -42,9 +42,8 @@ export class Actor {
 }
 
 Actor.prototype.update = function(time) {
-  if (!this.goal.next) {
-    return this.survived();
-  }
+  if (this.status === ACTOR_STATUS.DEAD) return this;
+  if (!this.goal.next) return this.survived();
 
   const { x: xCurrent, y: yCurrent } = this.pos;
   const { x: xNext, y: yNext } = this.goal.pos;

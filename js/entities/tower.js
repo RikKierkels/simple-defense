@@ -20,7 +20,7 @@ export const TOWERS = {
 };
 
 export class Tower {
-  constructor(type, pos, timer = null, target = null) {
+  constructor(type, pos, timer = null, targetId = null) {
     this.type = type;
     this.cost = TOWERS[type].cost;
     this.range = TOWERS[type].range;
@@ -28,7 +28,7 @@ export class Tower {
     this.projectileType = TOWERS[type].projectileType;
     this.pos = pos;
     this.timer = timer ? timer : Timer.start(TOWERS[type].fireRate);
-    this.target = target;
+    this.targetId = targetId;
   }
 }
 
@@ -36,13 +36,13 @@ Tower.prototype.update = function(time, actors) {
   let timer = this.timer.update(time);
 
   const isReadyToFire = this.timer.hasExpired;
-  if (!isReadyToFire) {
-    return new Tower(this.type, this.pos, timer);
-  }
+  if (!isReadyToFire) return new Tower(this.type, this.pos, timer);
 
   const target = this.findTarget(actors);
+  if (!target) return new Tower(this.type, this.pos, timer);
+
   timer = timer.reset();
-  return new Tower(this.type, this.pos, timer, target);
+  return new Tower(this.type, this.pos, timer, target.id);
 };
 
 Tower.prototype.findTarget = function(actors) {
