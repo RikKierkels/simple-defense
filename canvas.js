@@ -1,4 +1,4 @@
-import { MOUSE_BUTTON } from './const.js';
+import { MOUSE_BUTTON, ACTOR_TYPE, TOWER_TYPE, TILE_TYPE } from './const.js';
 import { Vector } from './vector.js';
 import { TOWERS } from './tower.js';
 
@@ -11,17 +11,17 @@ const SPRITESHEET = document.createElement('img');
 SPRITESHEET.src = './sprites.png';
 
 const SPRITESHEET_OFFSETS = {
-  'empty': { x: 2432, y: 768, h: 128, w: 128 },
-  'start': { x: 2816, y: 768, h: 128, w: 128 },
-  'end': { x: 2816, y: 768, h: 128, w: 128 },
-  'path': { x: 2816, y: 768, h: 128, w: 128 },
-  'obstacle': { x: 128, y: 512, h: 128, w: 128 },
+  [TILE_TYPE.EMPTY]: { x: 2432, y: 768, h: 128, w: 128 },
+  [TILE_TYPE.START]: { x: 2816, y: 768, h: 128, w: 128 },
+  [TILE_TYPE.END]: { x: 2816, y: 768, h: 128, w: 128 },
+  [TILE_TYPE.PATH]: { x: 2816, y: 768, h: 128, w: 128 },
+  [TILE_TYPE.OBSTACLE]: { x: 128, y: 512, h: 128, w: 128 },
 
-  'goblin': { x: 1920, y: 1280, h: 128, w: 128 },
-  'orc': { x: 1920, y: 1408, h: 128, w: 128 },
+  [ACTOR_TYPE.GOBLIN]: { x: 1920, y: 1280, h: 128, w: 128 },
+  [ACTOR_TYPE.ORC]: { x: 1920, y: 1408, h: 128, w: 128 },
 
-  'machine-gun': { x: 256, y: 256, h: 128, w: 128 },
-  'rockets': { x: 512, y: 512, h: 128, w: 128 }
+  [TOWER_TYPE.MACHINE_GUN]: { x: 256, y: 256, h: 128, w: 128 },
+  [TOWER_TYPE.ROCKET_LAUNCHER]: { x: 512, y: 512, h: 128, w: 128 }
 };
 
 export class CanvasDisplay {
@@ -240,7 +240,6 @@ CanvasDisplay.prototype.getClickedTileInBackground = function(mouseX, mouseY) {
   return { tile: { x: tileX, y: tileY }, towerType: null };
 };
 
-// TODO: Rename paneltower to type
 CanvasDisplay.prototype.getClickedTowerInPanel = function(mouseX, mouseY) {
   const hasClickedOnTower = (mouseX, mouseY, xStart, xEnd, yStart, yEnd) => {
     return (

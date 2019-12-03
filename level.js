@@ -1,5 +1,6 @@
 import { Vector } from './vector.js';
 import { Path } from './path.js';
+import { TILE_TYPE } from './const.js';
 
 export class Level {
   constructor(plan) {
@@ -13,15 +14,13 @@ export class Level {
 
     this.rows = rows.map((row, y) => {
       return row.map((char, x) => {
-        let type = charTypes[char];
-
-        if (type === 'start') {
+        if (char === TILE_TYPE.START) {
           this.start = new Vector(x, y);
-        } else if (type === 'end') {
+        } else if (char === TILE_TYPE.END) {
           this.end = new Vector(x, y);
         }
 
-        return type;
+        return char;
       });
     });
 
@@ -51,7 +50,7 @@ Level.prototype.getPathFrom = function(start, end) {
       }
 
       const tile = this.rows[pos.y][pos.x];
-      if (tile === 'path' || tile === 'end') {
+      if (tile === TILE_TYPE.PATH || tile === TILE_TYPE.END) {
         path.add(pos);
         currentPos = pos;
         break;
@@ -64,13 +63,5 @@ Level.prototype.getPathFrom = function(start, end) {
 
 Level.prototype.isTileBlocked = function(x, y) {
   const tile = this.rows[y][x];
-  return tile && tile !== 'empty';
-};
-
-const charTypes = {
-  '.': 'empty',
-  '#': 'path',
-  'S': 'start',
-  'E': 'end',
-  '@': 'obstacle'
+  return tile && tile !== TILE_TYPE.EMPTY;
 };

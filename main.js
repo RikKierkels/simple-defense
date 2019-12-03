@@ -1,8 +1,8 @@
+import { KEY, ACTOR_TYPE } from './const.js';
 import { State } from './state.js';
 import { Level } from './level.js';
 import { CanvasDisplay } from './canvas.js';
 import { Spawn } from './spawn.js';
-import { KEY } from './const.js';
 
 const GAME = {
   plan: `
@@ -22,7 +22,12 @@ const GAME = {
 .........E....................
 `,
   waves: [
-    { spawns: [Spawn.create('goblin', 20, 0.1), Spawn.create('orc', 30, 0.2)] }
+    {
+      spawns: [
+        Spawn.create([ACTOR_TYPE.GOBLIN], 20, 0.1),
+        Spawn.create([ACTOR_TYPE.ORC], 30, 0.2)
+      ]
+    }
   ]
 };
 
@@ -87,18 +92,20 @@ function trackUserInput() {
     mouseTarget: null
   };
 
+  const calculateMousePos = (current, offset) => current - (current - offset);
+
   function moved({ clientX, clientY, offsetX, offsetY }) {
     input.hasMoved = true;
-    input.mouseX = clientX - (clientX - offsetX);
-    input.mouseY = clientY - (clientY - offsetY);
+    input.mouseX = calculateMousePos(clientX, offsetX);
+    input.mouseY = calculateMousePos(clientY, offsetY);
   }
 
   canvas.addEventListener('mousedown', event => {
     // TODO Combine calculation of mouseX/mouseY
     const { clientX, clientY, offsetX, offsetY } = event;
     input.buttonStates[event.button] = true;
-    input.mouseX = clientX - (clientX - offsetX);
-    input.mouseY = clientY - (clientY - offsetY);
+    input.mouseX = calculateMousePos(clientX, offsetX);
+    input.mouseY = calculateMousePos(clientY, offsetY);
 
     canvas.addEventListener('mousemove', moved);
     event.stopPropagation();

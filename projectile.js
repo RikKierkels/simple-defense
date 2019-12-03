@@ -1,6 +1,8 @@
+import { PROJECTILE_TYPE } from './const.js';
+
 export const PROJECTILES = {
-  bullet: {},
-  rocket: {}
+  [PROJECTILE_TYPE.BULLET]: {},
+  [PROJECTILE_TYPE.ROCKET]: {}
 };
 
 export class Projectile {

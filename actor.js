@@ -1,15 +1,15 @@
+import { ACTOR_STATUS, DIRECTION, ACTOR_TYPE } from './const.js';
 import { Vector } from './vector.js';
-import { ACTOR_STATUS, DIRECTION } from './const.js';
 import { generateId } from './util.js';
 
-export const actorTypes = {
-  goblin: {
+const ACTORS = {
+  [ACTOR_TYPE.GOBLIN]: {
     health: 200,
     size: { x: 1, y: 1 },
     speed: { x: 2, y: 2 },
     reward: 20
   },
-  orc: {
+  [ACTOR_TYPE.ORC]: {
     health: 300,
     size: { x: 1, y: 1 },
     speed: { x: 2, y: 2 },
@@ -19,10 +19,10 @@ export const actorTypes = {
 
 export class Actor {
   constructor(id, type, pos, goal, status = ACTOR_STATUS.ALIVE) {
-    const health = actorTypes[type].health;
-    const speed = actorTypes[type].speed;
-    const size = actorTypes[type].size;
-    const reward = actorTypes[type].reward;
+    const health = ACTORS[type].health;
+    const speed = ACTORS[type].speed;
+    const size = ACTORS[type].size;
+    const reward = ACTORS[type].reward;
 
     this.id = id;
     this.type = type;

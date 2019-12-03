@@ -20,6 +20,24 @@ export const KEY = {
   ESCAPE: 'Escape'
 };
 
+export const TILE_TYPE = {
+  EMPTY: '.',
+  PATH: '#',
+  START: 'S',
+  END: 'E',
+  OBSTACLE: '@'
+};
+
+export const ACTOR_TYPE = {
+  GOBLIN: 'goblin',
+  ORC: 'orc'
+};
+
+export const TOWER_TYPE = {
+  MACHINE_GUN: 'machine-gun',
+  ROCKET_LAUNCHER: 'rocket-launcher'
+};
+
 export const PROJECTILE_TYPE = {
   BULLET: 'bullet',
   ROCKET: 'rocket'
