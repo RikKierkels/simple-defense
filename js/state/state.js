@@ -1,4 +1,4 @@
-import { ACTOR_STATUS } from '../utils/constants.js';
+import { ACTOR_STATUS, PROJECTILE_STATUS } from '../utils/constants.js';
 import { Tower } from '../entities/tower.js';
 import { Vector } from '../utils/vector.js';
 import { DisplayState } from './display-state.js';
@@ -63,16 +63,27 @@ State.prototype.update = function(time, userInput, clickedOn) {
   }
 
   towers = towers.map(tower => tower.update(time, actors));
-
   let projectiles = towers
     .filter(({ targetId }) => targetId)
-    .map(tower => {
-      return Projectile.create(tower.projectileType, tower.pos, tower.targetId);
-    })
-    .concat(this.projectiles);
-  towers = towers.map(tower => tower.resetTarget());
+    .map(({ projectileType: type, pos, targetId }) =>
+      Projectile.create(type, pos, targetId)
+    )
+    .concat(this.projectiles)
+    .map(projectile => projectile.update(actors));
 
-  projectiles = projectiles.map(projectile => projectile.update(actors));
+  actors = actors.map(actor => {
+    const damage = projectiles
+      .filter(({ status }) => status === PROJECTILE_STATUS.REACHED_TARGET)
+      .filter(({ targetId }) => targetId === actor.id)
+      .reduce((total, { damage }) => total + damage, 0);
+    return actor.takeDamage(damage);
+  });
+
+  projectiles = projectiles.filter(
+    ({ status }) => status !== PROJECTILE_STATUS.MOVING_TO_TARGET
+  );
+
+  towers = towers.map(tower => tower.resetTarget());
 
   return new State(
     this.level,

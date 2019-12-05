@@ -11,7 +11,7 @@ export const PROJECTILES = {
   },
   [PROJECTILE_TYPE.ROCKET]: {
     speed: 0.5,
-    damage: 40
+    damage: 500
   }
 };
 

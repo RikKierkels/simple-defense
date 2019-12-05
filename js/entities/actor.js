@@ -18,8 +18,14 @@ const ACTORS = {
 };
 
 export class Actor {
-  constructor(id, type, pos, goal, status = ACTOR_STATUS.ALIVE) {
-    const health = ACTORS[type].health;
+  constructor(
+    id,
+    type,
+    pos,
+    goal,
+    health = ACTORS[type].health,
+    status = ACTOR_STATUS.ALIVE
+  ) {
     const speed = ACTORS[type].speed;
     const size = ACTORS[type].size;
     const reward = ACTORS[type].reward;
@@ -65,31 +71,34 @@ Actor.prototype.moveHorizontally = function(direction, xNext, time) {
     direction === DIRECTION.RIGHT ? this.speed.x : this.speed.x * -1;
 
   const distanceTravelled = new Vector(speed, 0).times(time);
-  let newPos = this.pos.plus(distanceTravelled);
+  let nextPos = this.pos.plus(distanceTravelled);
 
   const hasReachedGoal =
-    (direction === DIRECTION.RIGHT && newPos.x > xNext) ||
-    (direction === DIRECTION.LEFT && newPos.x < xNext);
+    (direction === DIRECTION.RIGHT && nextPos.x > xNext) ||
+    (direction === DIRECTION.LEFT && nextPos.x < xNext);
 
-  return hasReachedGoal
-    ? new Actor(this.id, this.type, this.goal.pos, this.goal.next, this.status)
-    : new Actor(this.id, this.type, newPos, this.goal, this.status);
+  let pos, goal;
+  pos = hasReachedGoal ? this.goal.pos : nextPos;
+  goal = hasReachedGoal ? this.goal.next : this.goal;
+
+  return new Actor(this.id, this.type, pos, goal, this.health, this.status);
 };
 
 Actor.prototype.moveVertically = function(direction, yNext, time) {
   const speed = direction === DIRECTION.DOWN ? this.speed.y : this.speed.y * -1;
 
   const distanceTravelled = new Vector(0, speed).times(time);
-  const newPos = this.pos.plus(distanceTravelled);
+  const nextPos = this.pos.plus(distanceTravelled);
 
   const hasReachedGoal =
-    (direction === DIRECTION.DOWN && newPos.y > yNext) ||
-    (direction === DIRECTION.UP && newPos.y < yNext);
+    (direction === DIRECTION.DOWN && nextPos.y > yNext) ||
+    (direction === DIRECTION.UP && nextPos.y < yNext);
 
-  // TODO: Refactor?
-  return hasReachedGoal
-    ? new Actor(this.id, this.type, this.goal.pos, this.goal.next, this.status)
-    : new Actor(this.id, this.type, newPos, this.goal, this.status);
+  let pos, goal;
+  pos = hasReachedGoal ? this.goal.pos : nextPos;
+  goal = hasReachedGoal ? this.goal.next : this.goal;
+
+  return new Actor(this.id, this.type, pos, goal, this.health, this.status);
 };
 
 Actor.prototype.survived = function() {
@@ -98,10 +107,13 @@ Actor.prototype.survived = function() {
     this.type,
     this.pos,
     this.goal,
+    this.health,
     ACTOR_STATUS.SURVIVED
   );
 };
 
-Actor.prototype.died = function() {
-  return new Actor(this.id, this.type, this.pos, this.goal, ACTOR_STATUS.DEAD);
+Actor.prototype.takeDamage = function(damage) {
+  const health = this.health - damage;
+  const status = health <= 0 ? ACTOR_STATUS.DEAD : this.status;
+  return new Actor(this.id, this.type, this.pos, this.goal, health, status);
 };

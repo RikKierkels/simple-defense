@@ -23,18 +23,18 @@ export const TILE_TYPE = {
 };
 
 export const ACTOR_TYPE = {
-  GOBLIN: 100,
-  ORC: 101
+  GOBLIN: 'goblin',
+  ORC: 'orc'
 };
 
 export const TOWER_TYPE = {
-  MACHINE_GUN: 200,
-  ROCKET_LAUNCHER: 201
+  MACHINE_GUN: 'machine-gun',
+  ROCKET_LAUNCHER: 'rocket-launcher'
 };
 
 export const PROJECTILE_TYPE = {
-  BULLET: 300,
-  ROCKET: 301
+  BULLET: 'bullet',
+  ROCKET: 'rocket'
 };
 
 export const ACTOR_STATUS = {
