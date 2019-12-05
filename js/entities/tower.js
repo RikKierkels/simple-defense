@@ -55,6 +55,18 @@ Tower.prototype.findTarget = function(actors) {
     return Math.pow(diffX, 2) + Math.pow(diffY, 2);
   };
 
+  const isWithinTowerRange = (actorX, actorY) => {
+    const { x: towerX, y: towerY } = this.pos;
+    const { x: rangeX, y: rangeY } = this.range;
+
+    return (
+      actorX <= towerX + rangeX &&
+      actorX >= towerX - rangeX &&
+      actorY <= towerY + rangeY &&
+      actorY >= towerY - rangeY
+    );
+  };
+
   for (const actor of actors) {
     const distanceToActor = calculateDistance(this.pos, actor.pos);
 
@@ -64,8 +76,9 @@ Tower.prototype.findTarget = function(actors) {
     }
   }
 
-  // TODO: Check if closest target is within tower range
-  return closest;
+  return closest && isWithinTowerRange(closest.pos.x, closest.pos.y)
+    ? closest
+    : null;
 };
 
 Tower.prototype.resetTarget = function() {

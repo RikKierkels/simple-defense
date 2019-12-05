@@ -20,9 +20,9 @@ DisplayState.prototype.syncInput = function(input) {
     : this.startBuilding(input);
 };
 
-DisplayState.prototype.updateBuilding = function(input) {
+DisplayState.prototype.updateBuilding = function({ buttonStates }) {
   const hasCancelled =
-    input.buttonStates[KEY.ESCAPE] || input.buttonStates[MOUSE_BUTTON.RIGHT];
+    buttonStates[KEY.ESCAPE] || buttonStates[MOUSE_BUTTON.RIGHT];
 
   return hasCancelled ? this.clear() : this;
 };

@@ -55,12 +55,13 @@ State.prototype.update = function(time, input) {
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
   spawns = spawns.map(spawn => spawn.resetActorQueue());
 
-  const hasTriedBuildingTower = display.isBuilding && input.target.tile;
+  const { tile } = input.target;
+  const hasTriedBuildingTower = display.isBuilding && tile;
   if (
     hasTriedBuildingTower &&
-    this.canBuildTower(display.selectedTowerType, input.target.tile, this.money)
+    this.canBuildTower(display.selectedTowerType, tile, this.money)
   ) {
-    const { x, y } = input.target.tile;
+    const { x, y } = tile;
     const tower = new Tower(display.selectedTowerType, new Vector(x, y));
     display = this.display.clear();
     money = money - tower.cost;
