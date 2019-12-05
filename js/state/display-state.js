@@ -1,12 +1,12 @@
 import { KEY, MOUSE_BUTTON } from '../utils/constants.js';
 
 export class DisplayState {
-  constructor(typeOfTowerToBuild) {
-    this.typeOfTowerToBuild = typeOfTowerToBuild;
+  constructor(selectedTowerType) {
+    this.selectedTowerType = selectedTowerType;
   }
 
   get isBuilding() {
-    return this.typeOfTowerToBuild !== null;
+    return this.selectedTowerType !== null;
   }
 
   clear() {
@@ -14,22 +14,19 @@ export class DisplayState {
   }
 }
 
-DisplayState.prototype.syncInput = function(userInput, clickedOn) {
+DisplayState.prototype.syncInput = function(input) {
   return this.isBuilding
-    ? this.updateBuilding(userInput)
-    : this.startBuilding(userInput, clickedOn);
+    ? this.updateBuilding(input)
+    : this.startBuilding(input);
 };
 
-DisplayState.prototype.updateBuilding = function(userInput) {
+DisplayState.prototype.updateBuilding = function(input) {
   const hasCancelled =
-    userInput.buttonStates[KEY.ESCAPE] ||
-    userInput.buttonStates[MOUSE_BUTTON.RIGHT];
+    input.buttonStates[KEY.ESCAPE] || input.buttonStates[MOUSE_BUTTON.RIGHT];
 
   return hasCancelled ? this.clear() : this;
 };
 
-DisplayState.prototype.startBuilding = function(userInput, clickedOn) {
-  return clickedOn.towerType
-    ? new DisplayState(clickedOn.towerType)
-    : this.clear();
+DisplayState.prototype.startBuilding = function({ target }) {
+  return target.tower ? new DisplayState(target.tower) : this.clear();
 };

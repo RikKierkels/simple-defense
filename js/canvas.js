@@ -180,16 +180,16 @@ CanvasDisplay.prototype.drawStatistics = function(lives, money) {
   );
 };
 
-CanvasDisplay.prototype.drawTowerPreview = function(level, userInput, display) {
-  let { mouseX, mouseY } = userInput;
+CanvasDisplay.prototype.drawTowerPreview = function(level, input, display) {
+  let { mouseX, mouseY } = input;
   const hasMovedOutOfLevelBounds =
     mouseX > this.levelWidth || mouseY > this.canvas.height;
 
-  if (!display.typeOfTowerToBuild || hasMovedOutOfLevelBounds) {
+  if (!display.selectedTowerType || hasMovedOutOfLevelBounds) {
     return;
   }
 
-  const tower = TOWERS[display.typeOfTowerToBuild];
+  const tower = TOWERS[display.selectedTowerType];
 
   const scaledTowerSize = tower.size.times(SCALE);
   mouseX = mouseX - scaledTowerSize.x / 2;
@@ -225,9 +225,9 @@ CanvasDisplay.prototype.drawTowerPreview = function(level, userInput, display) {
   this.context.stroke();
 };
 
-CanvasDisplay.prototype.getClickedOnElement = function(userInput) {
+CanvasDisplay.prototype.getClickTarget = function(userInput) {
   if (!userInput.buttonStates[MOUSE_BUTTON.LEFT]) {
-    return { tile: null, towerType: null };
+    return { tower: null, tile: null };
   }
 
   const { mouseX, mouseY } = userInput;
@@ -242,7 +242,7 @@ CanvasDisplay.prototype.getClickedTileInBackground = function(mouseX, mouseY) {
   const tileX = Math.floor(mouseX / SCALE);
   const tileY = Math.floor(mouseY / SCALE);
 
-  return { tile: { x: tileX, y: tileY }, towerType: null };
+  return { tile: { x: tileX, y: tileY }, tower: null };
 };
 
 CanvasDisplay.prototype.getClickedTowerInPanel = function(mouseX, mouseY) {
@@ -266,6 +266,6 @@ CanvasDisplay.prototype.getClickedTowerInPanel = function(mouseX, mouseY) {
   );
 
   return clickedTower
-    ? { tile: null, towerType: clickedTower.type }
-    : { tile: null, towerType: null };
+    ? { tile: null, tower: clickedTower.type }
+    : { tile: null, tower: null };
 };

@@ -49,9 +49,12 @@ function runWave(display, state) {
 
   return new Promise(resolve => {
     runAnimation(time => {
-      const clickedOn = display.getClickedOnElement(userInput);
-      state = state.update(time, userInput, clickedOn);
-      display.syncState(state, userInput);
+      const input = {
+        ...userInput,
+        target: display.getClickTarget(userInput)
+      };
+      state = state.update(time, input);
+      display.syncState(state, input);
       if (state.lives > 0) {
         return true;
       } else if (ending > 0) {
@@ -89,7 +92,7 @@ function trackUserInput() {
     hasMoved: false,
     mouseX: 0,
     mouseY: 0,
-    mouseTarget: null
+    target: null
   };
 
   const calculateMousePos = (current, offset) => current - (current - offset);
@@ -101,7 +104,6 @@ function trackUserInput() {
   }
 
   canvas.addEventListener('mousedown', event => {
-    // TODO Combine calculation of mouseX/mouseY
     const { clientX, clientY, offsetX, offsetY } = event;
     input.buttonStates[event.button] = true;
     input.mouseX = calculateMousePos(clientX, offsetX);

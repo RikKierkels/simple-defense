@@ -1,5 +1,5 @@
 import { ACTOR_STATUS, PROJECTILE_STATUS } from '../utils/constants.js';
-import { Tower } from '../entities/tower.js';
+import { TOWERS, Tower } from '../entities/tower.js';
 import { Vector } from '../utils/vector.js';
 import { DisplayState } from './display-state.js';
 import { Projectile } from '../entities/projectile.js';
@@ -33,7 +33,10 @@ export class State {
   }
 }
 
-State.prototype.update = function(time, userInput, clickedOn) {
+State.prototype.update = function(time, input) {
+  let display = this.display.syncInput(input);
+  let towers = this.towers;
+
   let spawns = this.spawns.map(spawn => spawn.update(time, this.level.path));
   let actors = spawns
     .map(({ actors }) => actors)
@@ -52,14 +55,16 @@ State.prototype.update = function(time, userInput, clickedOn) {
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
   spawns = spawns.map(spawn => spawn.resetActorQueue());
 
-  // TODO: Refactor, this is iffy.
-  let display = this.display.syncInput(userInput, clickedOn);
-  const newTower = this.buildTower(clickedOn.tile, money);
-  let towers = newTower ? [...this.towers, newTower] : this.towers;
-
-  if (newTower) {
+  const hasTriedBuildingTower = display.isBuilding && input.target.tile;
+  if (
+    hasTriedBuildingTower &&
+    this.canBuildTower(display.selectedTowerType, input.target.tile, this.money)
+  ) {
+    const { x, y } = input.target.tile;
+    const tower = new Tower(display.selectedTowerType, new Vector(x, y));
     display = this.display.clear();
-    money = money - newTower.cost;
+    money = money - tower.cost;
+    towers = [...towers, tower];
   }
 
   towers = towers.map(tower => tower.update(time, actors));
@@ -70,6 +75,7 @@ State.prototype.update = function(time, userInput, clickedOn) {
     )
     .concat(this.projectiles)
     .map(projectile => projectile.update(actors));
+  towers = towers.map(tower => tower.resetTarget());
 
   actors = actors.map(actor => {
     const damage = projectiles
@@ -83,8 +89,6 @@ State.prototype.update = function(time, userInput, clickedOn) {
     ({ status }) => status !== PROJECTILE_STATUS.MOVING_TO_TARGET
   );
 
-  towers = towers.map(tower => tower.resetTarget());
-
   return new State(
     this.level,
     spawns,
@@ -97,19 +101,13 @@ State.prototype.update = function(time, userInput, clickedOn) {
   );
 };
 
-State.prototype.buildTower = function(tile, money) {
-  const towerType = this.display.typeOfTowerToBuild;
-  if (!tile || !towerType) return;
+State.prototype.canBuildTower = function(type, pos, money) {
+  const isTileEmpty =
+    !this.level.isTileBlocked(pos.x, pos.y) &&
+    !this.towers.some(
+      ({ pos: towerPos }) => towerPos.x === pos.x && towerPos.y === pos.y
+    );
+  const canAffordTower = TOWERS[type].cost <= money;
 
-  const isTileBlockedByLevel = this.level.isTileBlocked(tile.x, tile.y);
-  const isTileBlockedByOtherTower = this.towers.some(
-    ({ pos }) => pos.x === tile.x && pos.y === tile.y
-  );
-
-  if (isTileBlockedByLevel || isTileBlockedByOtherTower) {
-    return;
-  }
-
-  const tower = new Tower(towerType, new Vector(tile.x, tile.y));
-  return tower.cost <= money ? tower : null;
+  return isTileEmpty && canAffordTower;
 };
