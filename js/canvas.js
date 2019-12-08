@@ -51,6 +51,7 @@ CanvasDisplay.prototype.syncState = function(state, input) {
   this.drawBackground(state.level);
   this.drawTowers(state.towers);
   this.drawActors(state.actors);
+  this.drawProjectiles(state.projectiles);
   this.drawPanel();
   this.drawStatistics(state.lives, state.money);
   this.drawTowerPreview(state.level, input, state.display);
@@ -119,6 +120,18 @@ CanvasDisplay.prototype.drawActors = function(actors) {
       actor.pos.y * SCALE,
       width,
       height
+    );
+  }
+};
+
+CanvasDisplay.prototype.drawProjectiles = function(projectiles) {
+  for (const projectile of projectiles) {
+    this.context.fillStyle = 'black';
+    this.context.fillRect(
+      projectile.pos.x * SCALE,
+      projectile.pos.y * SCALE,
+      5,
+      5
     );
   }
 };

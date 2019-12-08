@@ -70,8 +70,8 @@ Actor.prototype.moveHorizontally = function(direction, xNext, time) {
   const speed =
     direction === DIRECTION.RIGHT ? this.speed.x : this.speed.x * -1;
 
-  const distanceTravelled = new Vector(speed, 0).times(time);
-  let nextPos = this.pos.plus(distanceTravelled);
+  const travelledDistance = new Vector(speed, 0).times(time);
+  let nextPos = this.pos.plus(travelledDistance);
 
   const hasReachedGoal =
     (direction === DIRECTION.RIGHT && nextPos.x > xNext) ||
@@ -87,8 +87,8 @@ Actor.prototype.moveHorizontally = function(direction, xNext, time) {
 Actor.prototype.moveVertically = function(direction, yNext, time) {
   const speed = direction === DIRECTION.DOWN ? this.speed.y : this.speed.y * -1;
 
-  const distanceTravelled = new Vector(0, speed).times(time);
-  const nextPos = this.pos.plus(distanceTravelled);
+  const travelledDistance = new Vector(0, speed).times(time);
+  const nextPos = this.pos.plus(travelledDistance);
 
   const hasReachedGoal =
     (direction === DIRECTION.DOWN && nextPos.y > yNext) ||

@@ -1,6 +1,7 @@
 import { Vector } from '../utils/vector.js';
 import { Timer } from '../utils/timer.js';
 import { PROJECTILE_TYPE, TOWER_TYPE } from '../utils/constants.js';
+import { Projectile } from './projectile.js';
 
 export const TOWERS = {
   [TOWER_TYPE.MACHINE_GUN]: {
@@ -29,6 +30,10 @@ export class Tower {
     this.pos = pos;
     this.timer = timer ? timer : Timer.start(TOWERS[type].fireRate);
     this.targetId = targetId;
+  }
+
+  get hasTarget() {
+    return this.targetId !== null;
   }
 }
 
@@ -79,6 +84,10 @@ Tower.prototype.findTarget = function(actors) {
   return closest && isWithinTowerRange(closest.pos.x, closest.pos.y)
     ? closest
     : null;
+};
+
+Tower.prototype.fire = function() {
+  return new Projectile(this.projectileType, this.pos, this.targetId);
 };
 
 Tower.prototype.resetTarget = function() {

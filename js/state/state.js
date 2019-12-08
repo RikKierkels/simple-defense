@@ -35,7 +35,6 @@ export class State {
 
 State.prototype.update = function(time, input) {
   let display = this.display.syncInput(input);
-  let towers = this.towers;
 
   let spawns = this.spawns.map(spawn => spawn.update(time, this.level.path));
   let actors = spawns
@@ -46,7 +45,7 @@ State.prototype.update = function(time, input) {
 
   let money = actors
     .filter(({ status }) => status === ACTOR_STATUS.DEAD)
-    .reduce((total, { status, reward }) => total + reward, this.money);
+    .reduce((total, { reward }) => total + reward, this.money);
 
   const lives = actors
     .filter(({ status }) => status === ACTOR_STATUS.SURVIVED)
@@ -55,6 +54,7 @@ State.prototype.update = function(time, input) {
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
   spawns = spawns.map(spawn => spawn.resetActorQueue());
 
+  let towers = this.towers;
   const { tile } = input.target;
   const hasTriedBuildingTower = display.isBuilding && tile;
   if (
@@ -69,13 +69,13 @@ State.prototype.update = function(time, input) {
   }
 
   towers = towers.map(tower => tower.update(time, actors));
+
   let projectiles = towers
-    .filter(({ targetId }) => targetId)
-    .map(({ projectileType: type, pos, targetId }) =>
-      Projectile.create(type, pos, targetId)
-    )
+    .filter(tower => tower.hasTarget)
+    .map(tower => tower.fire())
     .concat(this.projectiles)
-    .map(projectile => projectile.update(actors));
+    .map(projectile => projectile.update(time, actors));
+
   towers = towers.map(tower => tower.resetTarget());
 
   actors = actors.map(actor => {
@@ -87,7 +87,7 @@ State.prototype.update = function(time, input) {
   });
 
   projectiles = projectiles.filter(
-    ({ status }) => status !== PROJECTILE_STATUS.MOVING_TO_TARGET
+    ({ status }) => status === PROJECTILE_STATUS.MOVING_TO_TARGET
   );
 
   return new State(
