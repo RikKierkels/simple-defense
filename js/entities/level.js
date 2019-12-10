@@ -32,7 +32,7 @@ Level.prototype.getPathFrom = function(start, end) {
   const path = new Path(start);
   let currentPos = start;
 
-  const isOutOfBounds = (x, y) => {
+  const isOutOfLevelBounds = (x, y) => {
     return x < 0 || x > this.width - 1 || y < 0 || y > this.height - 1;
   };
 
@@ -45,7 +45,7 @@ Level.prototype.getPathFrom = function(start, end) {
     };
 
     for (const pos of Object.values(neighbours)) {
-      if (isOutOfBounds(pos.x, pos.y) || path.has(pos)) {
+      if (isOutOfLevelBounds(pos.x, pos.y) || path.has(pos)) {
         continue;
       }
 
