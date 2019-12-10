@@ -4,7 +4,7 @@ import {
   GAME_STATUS
 } from '../utils/constants.js';
 import { TOWERS, Tower } from '../entities/tower.js';
-import { Vector } from '../utils/vector.js';
+import { Vector } from '../entities/vector.js';
 import { DisplayState } from './display-state.js';
 
 const STARTING_LIVES = 10;

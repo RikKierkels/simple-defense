@@ -1,5 +1,5 @@
 import { Actor } from './actor.js';
-import { Timer } from '../utils/timer.js';
+import { Timer } from './timer.js';
 
 export class Spawn {
   constructor(type, count, timer, actorsToSpawn = []) {

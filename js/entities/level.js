@@ -1,4 +1,4 @@
-import { Vector } from '../utils/vector.js';
+import { Vector } from './vector.js';
 import { Path } from '../utils/path.js';
 import { TILE_TYPE } from '../utils/constants.js';
 
