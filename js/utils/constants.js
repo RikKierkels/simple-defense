@@ -1,3 +1,9 @@
+export const GAME_STATUS = {
+  PLAYING: 0,
+  LOST: 1,
+  WON: 2
+};
+
 export const DIRECTION = {
   UP: 0,
   RIGHT: 1,

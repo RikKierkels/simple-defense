@@ -1,22 +1,26 @@
-import { ACTOR_STATUS, PROJECTILE_STATUS } from '../utils/constants.js';
+import {
+  ACTOR_STATUS,
+  PROJECTILE_STATUS,
+  GAME_STATUS
+} from '../utils/constants.js';
 import { TOWERS, Tower } from '../entities/tower.js';
 import { Vector } from '../utils/vector.js';
 import { DisplayState } from './display-state.js';
-import { Projectile } from '../entities/projectile.js';
 
-const STARTING_LIVES = 100;
+const STARTING_LIVES = 10;
 const STARTING_MONEY = 200;
 
 export class State {
   constructor(
     level,
-    spawns,
+    spawns = [],
     actors = [],
     towers = [],
     projectiles = [],
     lives = STARTING_LIVES,
     money = STARTING_MONEY,
-    display = new DisplayState(null)
+    display = new DisplayState(null),
+    status = GAME_STATUS.PLAYING
   ) {
     this.level = level;
     this.spawns = spawns;
@@ -26,19 +30,38 @@ export class State {
     this.lives = lives;
     this.money = money;
     this.display = display;
+    this.status = status;
   }
 
-  static start(level, spawns) {
-    return new State(level, spawns);
+  static start(level) {
+    return new State(level);
   }
 }
+
+State.prototype.reset = function() {
+  return State.start(this.level);
+};
+
+State.prototype.addSpawns = function(spawns) {
+  return new State(
+    this.level,
+    spawns,
+    this.actors,
+    this.towers,
+    this.projectiles,
+    this.lives,
+    this.money,
+    this.display,
+    this.status
+  );
+};
 
 State.prototype.update = function(time, input) {
   let display = this.display.syncInput(input);
 
   let spawns = this.spawns.map(spawn => spawn.update(time, this.level.path));
   let actors = spawns
-    .map(({ actors }) => actors)
+    .map(({ actorsToSpawn }) => actorsToSpawn)
     .flat()
     .concat(this.actors);
   actors = actors.map(actor => actor.update(time));
@@ -50,9 +73,10 @@ State.prototype.update = function(time, input) {
   const lives = actors
     .filter(({ status }) => status === ACTOR_STATUS.SURVIVED)
     .reduce((total, _) => (total > 0 ? total - 1 : total), this.lives);
+  const status = lives > 0 ? GAME_STATUS.PLAYING : GAME_STATUS.LOST;
 
   actors = actors.filter(({ status }) => status === ACTOR_STATUS.ALIVE);
-  spawns = spawns.map(spawn => spawn.resetActorQueue());
+  spawns = spawns.map(spawn => spawn.resetActorsToSpawn());
 
   let towers = this.towers;
   const { tile } = input.target;
@@ -98,7 +122,8 @@ State.prototype.update = function(time, input) {
     projectiles,
     lives,
     money,
-    display
+    display,
+    status
   );
 };
 

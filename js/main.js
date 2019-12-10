@@ -1,4 +1,4 @@
-import { KEY, ACTOR_TYPE } from './utils/constants.js';
+import { KEY, ACTOR_TYPE, GAME_STATUS } from './utils/constants.js';
 import { State } from './state/state.js';
 import { Level } from './entities/level.js';
 import { CanvasDisplay } from './canvas.js';
@@ -24,6 +24,12 @@ const GAME = {
   waves: [
     {
       spawns: [
+        Spawn.create([ACTOR_TYPE.GOBLIN], 1, 0.1),
+        Spawn.create([ACTOR_TYPE.ORC], 1, 0.2)
+      ]
+    },
+    {
+      spawns: [
         Spawn.create([ACTOR_TYPE.GOBLIN], 20, 0.1),
         Spawn.create([ACTOR_TYPE.ORC], 30, 0.2)
       ]
@@ -45,7 +51,7 @@ function runAnimation(frameFunc) {
 }
 
 function runWave(display, state) {
-  let ending = 1;
+  let ending = 2;
 
   return new Promise(resolve => {
     runAnimation(time => {
@@ -55,14 +61,18 @@ function runWave(display, state) {
       };
       state = state.update(time, input);
       display.syncState(state, input);
-      if (state.lives > 0) {
+
+      const hasClearedWave =
+        !state.actors.length &&
+        state.spawns.every(spawn => spawn.hasSpawnedAllActors);
+
+      if (state.status !== GAME_STATUS.LOST && !hasClearedWave) {
         return true;
       } else if (ending > 0) {
         ending -= time;
         return true;
       } else {
-        display.clear();
-        resolve(state.lives);
+        resolve(state);
         return false;
       }
     });
@@ -72,11 +82,18 @@ function runWave(display, state) {
 async function runGame(game) {
   const level = new Level(game.plan);
   const display = new CanvasDisplay(document.body, level);
+  let state = State.start(level);
 
   for (let wave = 0; wave < game.waves.length; ) {
-    const state = State.start(level, game.waves[wave].spawns);
-    const lives = await runWave(display, state);
-    if (lives > 0) wave++;
+    state = state.addSpawns(game.waves[wave].spawns);
+    state = await runWave(display, state);
+
+    if (state.status === GAME_STATUS.LOST) {
+      state = state.reset();
+      wave = 0;
+    } else {
+      wave++;
+    }
   }
 }
 

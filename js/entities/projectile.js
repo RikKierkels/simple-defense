@@ -31,10 +31,6 @@ export class Projectile {
     this.speed = PROJECTILES[type].speed;
     this.damage = PROJECTILES[type].damage;
   }
-
-  static create(type, pos, targetId) {
-    return new Projectile(type, pos, targetId);
-  }
 }
 
 Projectile.prototype.despawn = function() {

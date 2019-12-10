@@ -2,7 +2,8 @@ import {
   MOUSE_BUTTON,
   ACTOR_TYPE,
   TOWER_TYPE,
-  TILE_TYPE
+  TILE_TYPE,
+  GAME_STATUS
 } from './utils/constants.js';
 import { Vector } from './utils/vector.js';
 import { TOWERS } from './entities/tower.js';
@@ -38,12 +39,8 @@ export class CanvasDisplay {
     this.context = this.canvas.getContext('2d');
   }
 
-  get levelWidth() {
+  get backgroundWidth() {
     return this.canvas.width - PANEL_WIDTH;
-  }
-
-  clear() {
-    this.canvas.remove();
   }
 }
 
@@ -55,11 +52,15 @@ CanvasDisplay.prototype.syncState = function(state, input) {
   this.drawPanel();
   this.drawStatistics(state.lives, state.money);
   this.drawTowerPreview(state.level, input, state.display);
+
+  if (state.status === GAME_STATUS.LOST) {
+    this.drawGameOver();
+  }
 };
 
 CanvasDisplay.prototype.drawBackground = function(level) {
   const xStart = 0;
-  const xEnd = this.levelWidth / SCALE;
+  const xEnd = this.backgroundWidth / SCALE;
   const yStart = 0;
   const yEnd = this.canvas.height / SCALE;
 
@@ -137,7 +138,7 @@ CanvasDisplay.prototype.drawProjectiles = function(projectiles) {
 };
 
 CanvasDisplay.prototype.drawPanel = function() {
-  const xStart = this.levelWidth;
+  const xStart = this.backgroundWidth;
   const yStart = 0;
 
   this.context.fillStyle = 'black';
@@ -161,7 +162,7 @@ CanvasDisplay.prototype.drawPanel = function() {
 CanvasDisplay.prototype.mapTowersToPanelPositions = function(towers) {
   const xTowerOffset = (PANEL_WIDTH - PANEL_TOWER_SIZE) / 2;
   const yTowerOffset = PANEL_MARGIN;
-  const xStart = this.levelWidth + xTowerOffset;
+  const xStart = this.backgroundWidth + xTowerOffset;
   const xEnd = xStart + PANEL_TOWER_SIZE;
 
   return Object.keys(towers).map((type, index) => {
@@ -196,7 +197,7 @@ CanvasDisplay.prototype.drawStatistics = function(lives, money) {
 CanvasDisplay.prototype.drawTowerPreview = function(level, input, display) {
   let { mouseX, mouseY } = input;
   const hasMovedOutOfLevelBounds =
-    mouseX > this.levelWidth || mouseY > this.canvas.height;
+    mouseX > this.backgroundWidth || mouseY > this.canvas.height;
 
   if (!display.selectedTowerType || hasMovedOutOfLevelBounds) {
     return;
@@ -244,7 +245,7 @@ CanvasDisplay.prototype.getClickTarget = function(userInput) {
   }
 
   const { mouseX, mouseY } = userInput;
-  const hasClickedOnBackground = mouseX < this.levelWidth;
+  const hasClickedOnBackground = mouseX < this.backgroundWidth;
 
   return hasClickedOnBackground
     ? this.getClickedTileInBackground(mouseX, mouseY)
@@ -281,4 +282,10 @@ CanvasDisplay.prototype.getClickedTowerInPanel = function(mouseX, mouseY) {
   return clickedTower
     ? { tile: null, tower: clickedTower.type }
     : { tile: null, tower: null };
+};
+
+CanvasDisplay.prototype.drawGameOver = function(lives) {
+  this.context.font = '50px Georgia';
+  this.context.fillStyle = 'black';
+  this.context.fillText('GAME OVER', 0, SCALE * 2);
 };
