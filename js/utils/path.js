@@ -1,20 +1,20 @@
 export class Path {
   constructor(start) {
-    this._startNode = start ? new PathNode(start) : null;
+    this.startNode = new PathNode(start);
   }
 
   get start() {
-    return this._startNode;
+    return this.startNode;
   }
 }
 
 Path.prototype.add = function(pos) {
-  if (!this._startNode) {
-    this._startNode = new PathNode(pos);
+  if (!this.startNode) {
+    this.startNode = new PathNode(pos);
     return;
   }
 
-  let current = this._startNode;
+  let current = this.startNode;
   while (current.next) {
     current = current.next;
   }
@@ -23,7 +23,7 @@ Path.prototype.add = function(pos) {
 };
 
 Path.prototype.has = function(pos) {
-  let current = this._startNode;
+  let current = this.startNode;
 
   do {
     if (current.pos.x === pos.x && current.pos.y === pos.y) {
@@ -36,7 +36,7 @@ Path.prototype.has = function(pos) {
 };
 
 Path.prototype[Symbol.iterator] = function*() {
-  let current = this._startNode;
+  let current = this.startNode;
 
   while (current) {
     yield current.pos;
