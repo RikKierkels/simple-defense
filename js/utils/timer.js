@@ -13,8 +13,8 @@ export class Timer {
   }
 }
 
-Timer.prototype.update = function(elapsedTime) {
-  return new Timer(this.time, this.elapsedTime + elapsedTime);
+Timer.prototype.update = function(time) {
+  return new Timer(this.time, this.elapsedTime + time);
 };
 
 Timer.prototype.reset = function() {
