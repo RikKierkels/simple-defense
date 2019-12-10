@@ -1,5 +1,5 @@
-import { Vector } from './vector.js';
-import { Timer } from './timer.js';
+import { Vector } from '../utils/vector.js';
+import { Timer } from '../utils/timer.js';
 import { PROJECTILE_TYPE, TOWER_TYPE } from '../utils/constants.js';
 import { Projectile } from './projectile.js';
 

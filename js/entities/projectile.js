@@ -4,7 +4,7 @@ import {
   PROJECTILE_TYPE,
   PROJECTILE_STATUS
 } from '../utils/constants.js';
-import { Vector } from './vector.js';
+import { Vector } from '../utils/vector.js';
 
 export const PROJECTILES = {
   [PROJECTILE_TYPE.BULLET]: {

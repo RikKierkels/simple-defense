@@ -5,7 +5,7 @@ import {
   TILE_TYPE,
   GAME_STATUS
 } from './utils/constants.js';
-import { Vector } from './entities/vector.js';
+import { Vector } from './utils/vector.js';
 import { TOWERS } from './entities/tower.js';
 
 const SCALE = 35;
