@@ -14,7 +14,7 @@ const PANEL_MARGIN = SCALE * 0.75;
 const PANEL_WIDTH = SCALE * 4;
 
 const SPRITESHEET = document.createElement('img');
-SPRITESHEET.src = './img/sprites.png';
+SPRITESHEET.src = './img/spritesheet.png';
 
 const SPRITESHEET_OFFSETS = {
   [TILE_TYPE.EMPTY]: { x: 2432, y: 768, h: 128, w: 128 },
