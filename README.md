@@ -1,5 +1,6 @@
 # simple-defense
-HTML-5 Tower Defense Game
+HTML-5 Canvas Tower Defense Game
 
-This game features a fully functional game loop that takes fps into account. The focus of this game is to implement immutable state and apply functional programming practices.
-There has been little focus on the UI and most sprites are placeholders.
+- Features a game-loop that takes current fps into account.
+- Focus for development is on keeping state immutable and declerative over imperative programming.
+- There is little focus on the UI therefore most sprites are placeholders.
