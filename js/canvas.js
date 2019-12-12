@@ -17,18 +17,19 @@ const PANEL_WIDTH = SCALE * 4;
 const SPRITESHEET = document.createElement('img');
 SPRITESHEET.src = './img/spritesheet.png';
 
+const SPRITE_SIZE = 128;
 const SPRITESHEET_OFFSETS = {
-  [TILE_TYPE.EMPTY]: { x: 2432, y: 768, h: 128, w: 128 },
-  [TILE_TYPE.START]: { x: 2816, y: 768, h: 128, w: 128 },
-  [TILE_TYPE.END]: { x: 2816, y: 768, h: 128, w: 128 },
-  [TILE_TYPE.PATH]: { x: 2816, y: 768, h: 128, w: 128 },
-  [TILE_TYPE.OBSTACLE]: { x: 128, y: 512, h: 128, w: 128 },
+  [TILE_TYPE.EMPTY]: { x: 2432, y: 768 },
+  [TILE_TYPE.START]: { x: 2816, y: 768 },
+  [TILE_TYPE.END]: { x: 2816, y: 768 },
+  [TILE_TYPE.PATH]: { x: 2816, y: 768 },
+  [TILE_TYPE.OBSTACLE]: { x: 128, y: 512 },
 
-  [ACTOR_TYPE.SOLDIER]: { x: 1920, y: 1280, h: 128, w: 128 },
-  [ACTOR_TYPE.TANK]: { x: 1920, y: 1408, h: 128, w: 128 },
+  [ACTOR_TYPE.SOLDIER]: { x: 1920, y: 1280 },
+  [ACTOR_TYPE.TANK]: { x: 1920, y: 1408 },
 
-  [TOWER_TYPE.MACHINE_GUN]: { x: 256, y: 256, h: 128, w: 128 },
-  [TOWER_TYPE.ROCKET_LAUNCHER]: { x: 512, y: 512, h: 128, w: 128 }
+  [TOWER_TYPE.MACHINE_GUN]: { x: 2432, y: 1280 },
+  [TOWER_TYPE.ROCKET_LAUNCHER]: { x: 2560, y: 1024 }
 };
 
 const ACTOR_CANVAS_CACHE = {
@@ -89,8 +90,8 @@ CanvasDisplay.prototype.drawBackground = function(level) {
         SPRITESHEET,
         sprite.x,
         sprite.y,
-        sprite.w,
-        sprite.h,
+        SPRITE_SIZE,
+        SPRITE_SIZE,
         x * SCALE,
         y * SCALE,
         SCALE,
@@ -110,8 +111,8 @@ CanvasDisplay.prototype.drawTowers = function(towers) {
       SPRITESHEET,
       sprite.x,
       sprite.y,
-      sprite.w,
-      sprite.h,
+      SPRITE_SIZE,
+      SPRITE_SIZE,
       tower.pos.x * SCALE,
       tower.pos.y * SCALE,
       width,
@@ -163,8 +164,8 @@ CanvasDisplay.prototype.createCanvasWithRotatedSprite = (
     SPRITESHEET,
     sprite.x,
     sprite.y,
-    sprite.w,
-    sprite.h,
+    SPRITE_SIZE,
+    SPRITE_SIZE,
     0,
     0,
     size.x * SCALE,
@@ -194,12 +195,13 @@ CanvasDisplay.prototype.drawPanel = function() {
   this.context.fillRect(xStart, yStart, PANEL_WIDTH, this.canvas.height);
 
   this.mapTowersToPanelPositions(TOWERS).forEach(({ type, xStart, yStart }) => {
+    const sprite = SPRITESHEET_OFFSETS[type];
     this.context.drawImage(
       SPRITESHEET,
-      SPRITESHEET_OFFSETS[type].x,
-      SPRITESHEET_OFFSETS[type].y,
-      SPRITESHEET_OFFSETS[type].h,
-      SPRITESHEET_OFFSETS[type].w,
+      sprite.x,
+      sprite.y,
+      SPRITE_SIZE,
+      SPRITE_SIZE,
       xStart,
       yStart,
       PANEL_TOWER_SIZE,
@@ -263,13 +265,14 @@ CanvasDisplay.prototype.drawTowerPreview = function(level, input, display) {
 
   if (level.isTileBlocked(nearestTileX, nearestTileY)) return;
 
+  const sprite = SPRITESHEET_OFFSETS[display.selectedTowerType];
   const tilePos = new Vector(nearestTileX, nearestTileY);
   this.context.drawImage(
     SPRITESHEET,
-    256,
-    256,
-    128,
-    128,
+    sprite.x,
+    sprite.y,
+    SPRITE_SIZE,
+    SPRITE_SIZE,
     tilePos.x * SCALE,
     tilePos.y * SCALE,
     scaledTowerSize.x,
