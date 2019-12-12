@@ -11,10 +11,6 @@ import { Vector } from './utils/vector.js';
 import { TOWERS } from './entities/tower.js';
 
 const SCALE = 35;
-const PANEL_TOWER_SIZE = SCALE * 2;
-const PANEL_MARGIN = SCALE * 0.75;
-const PANEL_WIDTH = SCALE * 4;
-
 const SPRITESHEET = document.createElement('img');
 SPRITESHEET.src = './img/spritesheet.png';
 
@@ -50,6 +46,10 @@ const ACTOR_CANVAS_CACHE = {
     [DIRECTION.RIGHT]: null
   }
 };
+
+const PANEL_TOWER_SIZE = SCALE * 2;
+const PANEL_MARGIN = SCALE * 0.75;
+const PANEL_WIDTH = SCALE * 4;
 
 export class CanvasDisplay {
   constructor(parent, level) {
