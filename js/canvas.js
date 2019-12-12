@@ -3,7 +3,8 @@ import {
   ACTOR_TYPE,
   TOWER_TYPE,
   TILE_TYPE,
-  GAME_STATUS
+  GAME_STATUS,
+  DIRECTION
 } from './utils/constants.js';
 import { Vector } from './utils/vector.js';
 import { TOWERS } from './entities/tower.js';
@@ -28,6 +29,21 @@ const SPRITESHEET_OFFSETS = {
 
   [TOWER_TYPE.MACHINE_GUN]: { x: 256, y: 256, h: 128, w: 128 },
   [TOWER_TYPE.ROCKET_LAUNCHER]: { x: 512, y: 512, h: 128, w: 128 }
+};
+
+const ACTOR_CANVAS_CACHE = {
+  [ACTOR_TYPE.GOBLIN]: {
+    [DIRECTION.UP]: null,
+    [DIRECTION.LEFT]: null,
+    [DIRECTION.DOWN]: null,
+    [DIRECTION.RIGHT]: null
+  },
+  [ACTOR_TYPE.ORC]: {
+    [DIRECTION.UP]: null,
+    [DIRECTION.LEFT]: null,
+    [DIRECTION.DOWN]: null,
+    [DIRECTION.RIGHT]: null
+  }
 };
 
 export class CanvasDisplay {
@@ -104,25 +120,58 @@ CanvasDisplay.prototype.drawTowers = function(towers) {
   }
 };
 
-// TODO: Direction
 CanvasDisplay.prototype.drawActors = function(actors) {
   for (const actor of actors) {
-    const width = actor.size.x * SCALE;
-    const height = actor.size.y * SCALE;
-    const sprite = SPRITESHEET_OFFSETS[actor.type];
+    const { type, direction, size } = actor;
 
-    this.context.drawImage(
-      SPRITESHEET,
-      sprite.x,
-      sprite.y,
-      sprite.w,
-      sprite.h,
-      actor.pos.x * SCALE,
-      actor.pos.y * SCALE,
-      width,
-      height
-    );
+    let canvas;
+    if (ACTOR_CANVAS_CACHE[type][direction]) {
+      canvas = ACTOR_CANVAS_CACHE[type][direction];
+    } else {
+      canvas = this.createCanvasWithRotatedSprite(type, size, direction);
+      ACTOR_CANVAS_CACHE[type][direction] = canvas;
+    }
+
+    this.context.drawImage(canvas, actor.pos.x * SCALE, actor.pos.y * SCALE);
   }
+};
+
+CanvasDisplay.prototype.createCanvasWithRotatedSprite = (
+  type,
+  size,
+  direction
+) => {
+  const sprite = SPRITESHEET_OFFSETS[type];
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+
+  let angle = 0;
+  if (direction === DIRECTION.DOWN) {
+    angle = 90;
+  } else if (direction === DIRECTION.LEFT) {
+    angle = 180;
+  } else if (direction === DIRECTION.UP) {
+    angle = 270;
+  }
+
+  const translateByPx = SCALE / 2;
+  context.translate(translateByPx, translateByPx);
+  context.rotate((angle * Math.PI) / 180);
+  context.translate(-translateByPx, -translateByPx);
+
+  context.drawImage(
+    SPRITESHEET,
+    sprite.x,
+    sprite.y,
+    sprite.w,
+    sprite.h,
+    0,
+    0,
+    size.x * SCALE,
+    size.y * SCALE
+  );
+
+  return canvas;
 };
 
 CanvasDisplay.prototype.drawProjectiles = function(projectiles) {

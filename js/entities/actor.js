@@ -23,6 +23,7 @@ export class Actor {
     type,
     pos,
     goal,
+    direction = DIRECTION.DOWN,
     health = ACTORS[type].health,
     status = ACTOR_STATUS.ALIVE
   ) {
@@ -37,6 +38,7 @@ export class Actor {
     this.size = new Vector(size.x, size.y);
     this.speed = new Vector(speed.x, speed.y);
     this.goal = goal;
+    this.direction = direction;
     this.status = status;
     this.reward = reward;
   }
@@ -81,7 +83,15 @@ Actor.prototype.moveHorizontally = function(direction, xNext, time) {
   pos = hasReachedGoal ? this.goal.pos : nextPos;
   goal = hasReachedGoal ? this.goal.next : this.goal;
 
-  return new Actor(this.id, this.type, pos, goal, this.health, this.status);
+  return new Actor(
+    this.id,
+    this.type,
+    pos,
+    goal,
+    direction,
+    this.health,
+    this.status
+  );
 };
 
 Actor.prototype.moveVertically = function(direction, yNext, time) {
@@ -98,7 +108,15 @@ Actor.prototype.moveVertically = function(direction, yNext, time) {
   pos = hasReachedGoal ? this.goal.pos : nextPos;
   goal = hasReachedGoal ? this.goal.next : this.goal;
 
-  return new Actor(this.id, this.type, pos, goal, this.health, this.status);
+  return new Actor(
+    this.id,
+    this.type,
+    pos,
+    goal,
+    direction,
+    this.health,
+    this.status
+  );
 };
 
 Actor.prototype.survived = function() {
@@ -107,6 +125,7 @@ Actor.prototype.survived = function() {
     this.type,
     this.pos,
     this.goal,
+    this.direction,
     this.health,
     ACTOR_STATUS.SURVIVED
   );
@@ -115,5 +134,13 @@ Actor.prototype.survived = function() {
 Actor.prototype.takeDamage = function(damage) {
   const health = this.health - damage;
   const status = health <= 0 ? ACTOR_STATUS.DEAD : this.status;
-  return new Actor(this.id, this.type, this.pos, this.goal, health, status);
+  return new Actor(
+    this.id,
+    this.type,
+    this.pos,
+    this.goal,
+    this.direction,
+    health,
+    status
+  );
 };
