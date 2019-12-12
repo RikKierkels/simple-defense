@@ -29,8 +29,8 @@ export const TILE_TYPE = {
 };
 
 export const ACTOR_TYPE = {
-  GOBLIN: 'goblin',
-  ORC: 'orc'
+  SOLDIER: 'soldier',
+  TANK: 'tank'
 };
 
 export const TOWER_TYPE = {

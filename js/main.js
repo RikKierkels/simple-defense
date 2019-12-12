@@ -24,14 +24,14 @@ const GAME = {
   waves: [
     {
       spawns: [
-        Spawn.create([ACTOR_TYPE.GOBLIN], 1, 0.1),
-        Spawn.create([ACTOR_TYPE.ORC], 1, 0.2)
+        Spawn.create([ACTOR_TYPE.SOLDIER], 1, 0.1),
+        Spawn.create([ACTOR_TYPE.TANK], 1, 0.2)
       ]
     },
     {
       spawns: [
-        Spawn.create([ACTOR_TYPE.GOBLIN], 20, 0.1),
-        Spawn.create([ACTOR_TYPE.ORC], 30, 0.2)
+        Spawn.create([ACTOR_TYPE.SOLDIER], 20, 0.1),
+        Spawn.create([ACTOR_TYPE.TANK], 30, 0.2)
       ]
     }
   ]

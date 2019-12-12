@@ -24,21 +24,21 @@ const SPRITESHEET_OFFSETS = {
   [TILE_TYPE.PATH]: { x: 2816, y: 768, h: 128, w: 128 },
   [TILE_TYPE.OBSTACLE]: { x: 128, y: 512, h: 128, w: 128 },
 
-  [ACTOR_TYPE.GOBLIN]: { x: 1920, y: 1280, h: 128, w: 128 },
-  [ACTOR_TYPE.ORC]: { x: 1920, y: 1408, h: 128, w: 128 },
+  [ACTOR_TYPE.SOLDIER]: { x: 1920, y: 1280, h: 128, w: 128 },
+  [ACTOR_TYPE.TANK]: { x: 1920, y: 1408, h: 128, w: 128 },
 
   [TOWER_TYPE.MACHINE_GUN]: { x: 256, y: 256, h: 128, w: 128 },
   [TOWER_TYPE.ROCKET_LAUNCHER]: { x: 512, y: 512, h: 128, w: 128 }
 };
 
 const ACTOR_CANVAS_CACHE = {
-  [ACTOR_TYPE.GOBLIN]: {
+  [ACTOR_TYPE.SOLDIER]: {
     [DIRECTION.UP]: null,
     [DIRECTION.LEFT]: null,
     [DIRECTION.DOWN]: null,
     [DIRECTION.RIGHT]: null
   },
-  [ACTOR_TYPE.ORC]: {
+  [ACTOR_TYPE.TANK]: {
     [DIRECTION.UP]: null,
     [DIRECTION.LEFT]: null,
     [DIRECTION.DOWN]: null,

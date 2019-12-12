@@ -3,13 +3,13 @@ import { Vector } from '../utils/vector.js';
 import { generateId } from '../utils/util.js';
 
 const ACTORS = {
-  [ACTOR_TYPE.GOBLIN]: {
+  [ACTOR_TYPE.SOLDIER]: {
     health: 200,
     size: { x: 1, y: 1 },
     speed: { x: 2, y: 2 },
     reward: 20
   },
-  [ACTOR_TYPE.ORC]: {
+  [ACTOR_TYPE.TANK]: {
     health: 300,
     size: { x: 1, y: 1 },
     speed: { x: 2, y: 2 },
