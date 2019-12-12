@@ -4,7 +4,8 @@ import {
   TOWER_TYPE,
   TILE_TYPE,
   GAME_STATUS,
-  DIRECTION
+  DIRECTION,
+  PROJECTILE_TYPE
 } from './utils/constants.js';
 import { Vector } from './utils/vector.js';
 import { TOWERS } from './entities/tower.js';
@@ -29,7 +30,10 @@ const SPRITESHEET_OFFSETS = {
   [ACTOR_TYPE.TANK]: { x: 1920, y: 1408 },
 
   [TOWER_TYPE.MACHINE_GUN]: { x: 2432, y: 1280 },
-  [TOWER_TYPE.ROCKET_LAUNCHER]: { x: 2560, y: 1024 }
+  [TOWER_TYPE.ROCKET_LAUNCHER]: { x: 2560, y: 1024 },
+
+  [PROJECTILE_TYPE.BULLET]: { x: 2432, y: 1408 },
+  [PROJECTILE_TYPE.ROCKET]: { x: 2688, y: 1280 }
 };
 
 const ACTOR_CANVAS_CACHE = {
@@ -177,12 +181,18 @@ CanvasDisplay.prototype.createCanvasWithRotatedSprite = (
 
 CanvasDisplay.prototype.drawProjectiles = function(projectiles) {
   for (const projectile of projectiles) {
-    this.context.fillStyle = 'black';
-    this.context.fillRect(
+    const sprite = SPRITESHEET_OFFSETS[projectile.type];
+
+    this.context.drawImage(
+      SPRITESHEET,
+      sprite.x,
+      sprite.y,
+      SPRITE_SIZE,
+      SPRITE_SIZE,
       projectile.pos.x * SCALE,
       projectile.pos.y * SCALE,
-      5,
-      5
+      SCALE,
+      SCALE
     );
   }
 };
