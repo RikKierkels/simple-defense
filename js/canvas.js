@@ -9,6 +9,7 @@ import {
 } from './utils/constants.js';
 import { Vector } from './utils/vector.js';
 import { TOWERS } from './entities/tower.js';
+import { CanvasCache } from './state/canvas-cache.js';
 
 const SCALE = 35;
 const SPRITESHEET = document.createElement('img');
@@ -32,21 +33,6 @@ const SPRITESHEET_OFFSETS = {
   [PROJECTILE_TYPE.ROCKET]: { x: 2688, y: 1280 }
 };
 
-const ACTOR_CANVAS_CACHE = {
-  [ACTOR_TYPE.SOLDIER]: {
-    [DIRECTION.UP]: null,
-    [DIRECTION.LEFT]: null,
-    [DIRECTION.DOWN]: null,
-    [DIRECTION.RIGHT]: null
-  },
-  [ACTOR_TYPE.TANK]: {
-    [DIRECTION.UP]: null,
-    [DIRECTION.LEFT]: null,
-    [DIRECTION.DOWN]: null,
-    [DIRECTION.RIGHT]: null
-  }
-};
-
 const PANEL_TOWER_SIZE = SCALE * 2;
 const PANEL_MARGIN = SCALE * 0.75;
 const PANEL_WIDTH = SCALE * 4;
@@ -58,6 +44,7 @@ export class CanvasDisplay {
     this.canvas.height = level.height * SCALE;
     parent.appendChild(this.canvas);
     this.context = this.canvas.getContext('2d');
+    this.cache = CanvasCache.create();
   }
 
   get backgroundWidth() {
@@ -129,12 +116,10 @@ CanvasDisplay.prototype.drawActors = function(actors) {
   for (const actor of actors) {
     const { type, direction, size } = actor;
 
-    let canvas;
-    if (ACTOR_CANVAS_CACHE[type][direction]) {
-      canvas = ACTOR_CANVAS_CACHE[type][direction];
-    } else {
+    let canvas = this.cache.get(type, direction);
+    if (!canvas) {
       canvas = this.createCanvasWithRotatedSprite(type, size, direction);
-      ACTOR_CANVAS_CACHE[type][direction] = canvas;
+      this.cache = this.cache.set(type, direction, canvas);
     }
 
     this.context.drawImage(canvas, actor.pos.x * SCALE, actor.pos.y * SCALE);
