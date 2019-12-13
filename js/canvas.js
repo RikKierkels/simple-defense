@@ -13,7 +13,7 @@ import { Vector } from './utils/vector.js';
 import { TOWERS } from './entities/tower.js';
 import { CanvasCache } from './state/canvas-cache.js';
 
-const SCALE = 35;
+const SCALE = 25;
 const SPRITESHEET = document.createElement('img');
 SPRITESHEET.src = './img/spritesheet.png';
 
