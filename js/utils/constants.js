@@ -54,3 +54,14 @@ export const PROJECTILE_STATUS = {
   DESPAWNED: 1,
   REACHED_TARGET: 2
 };
+
+export const FONT_SIZE_RATIO = {
+  LARGE: 1.5,
+  MEDIUM: 1,
+  SMALL: 0.75
+};
+
+export const FONT_COLOR = {
+  LIGHT: 'white',
+  DARK: 'black'
+};

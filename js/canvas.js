@@ -5,7 +5,9 @@ import {
   TILE_TYPE,
   GAME_STATUS,
   DIRECTION,
-  PROJECTILE_TYPE
+  PROJECTILE_TYPE,
+  FONT_COLOR,
+  FONT_SIZE_RATIO
 } from './utils/constants.js';
 import { Vector } from './utils/vector.js';
 import { TOWERS } from './entities/tower.js';
@@ -36,6 +38,7 @@ const SPRITESHEET_OFFSETS = {
 const PANEL_TOWER_SIZE = SCALE * 2;
 const PANEL_MARGIN = SCALE * 0.75;
 const PANEL_WIDTH = SCALE * 4;
+const DEFAULT_FONT_FAMILY = 'Georgia';
 
 export class CanvasDisplay {
   constructor(parent, level) {
@@ -227,8 +230,10 @@ CanvasDisplay.prototype.mapTowersToPanelPositions = function(towers) {
 };
 
 CanvasDisplay.prototype.drawStatistics = function(lives, money) {
-  this.context.font = '28px Georgia';
-  this.context.fillStyle = 'white';
+  const fontSize = FONT_SIZE_RATIO.MEDIUM * SCALE;
+  console.log(fontSize);
+  this.context.font = `${fontSize}px ${DEFAULT_FONT_FAMILY}`;
+  this.context.fillStyle = FONT_COLOR.LIGHT;
 
   const livesTextWidth = this.context.measureText(lives).width;
 
@@ -331,8 +336,9 @@ CanvasDisplay.prototype.getClickedTowerInPanel = function(mouseX, mouseY) {
     : { tile: null, tower: null };
 };
 
-CanvasDisplay.prototype.drawGameOver = function(lives) {
-  this.context.font = '50px Georgia';
-  this.context.fillStyle = 'black';
+CanvasDisplay.prototype.drawGameOver = function() {
+  const fontSize = FONT_SIZE_RATIO.LARGE * SCALE;
+  this.context.font = `${fontSize}px ${DEFAULT_FONT_FAMILY}`;
+  this.context.fillStyle = FONT_COLOR.DARK;
   this.context.fillText('GAME OVER', 0, SCALE * 2);
 };
