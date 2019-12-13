@@ -126,11 +126,11 @@ CanvasDisplay.prototype.drawActors = function(actors) {
   }
 };
 
-CanvasDisplay.prototype.createCanvasWithRotatedSprite = (
+CanvasDisplay.prototype.createCanvasWithRotatedSprite = function(
   type,
   size,
   direction
-) => {
+) {
   const sprite = SPRITESHEET_OFFSETS[type];
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
